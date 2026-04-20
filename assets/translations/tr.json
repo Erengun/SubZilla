@@ -104,6 +104,8 @@
 		"export": "Abonelikleri Dışa Aktar",
 		"import": "Abonelikleri İçe Aktar",
 		"about": "Hakkında",
+		"privacy_policy": "Gizlilik Politikası",
+		"terms_conditions": "Kullanım Koşulları",
 		"about_desc": "Aboneliklerinizi kolayca takip etmenizi sağlayan açık kaynaklı bir uygulama.",
 		"view_github": "GitHub'da Görüntüle",
 		"export_success": "Abonelikler başarıyla dışa aktarıldı!",

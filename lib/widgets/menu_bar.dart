@@ -32,10 +32,31 @@ class _MenubarState extends ConsumerState<SidebarMenu> {
   }
 
   final Uri _url = Uri.parse('https://github.com/DevOpen-io/Subs-Tracker-App');
+  final Uri _privacyPolicyUrl = Uri.parse(
+    'https://github.com/DevOpen-io/Subs-Tracker-App/blob/main/docs/privacy-policy.md',
+  );
+  final Uri _termsUrl = Uri.parse(
+    'https://github.com/DevOpen-io/Subs-Tracker-App/blob/main/docs/terms-and-conditions.md',
+  );
 
   Future<void> _launchUrl() async {
     if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $_url');
+    }
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    if (!await launchUrl(
+      _privacyPolicyUrl,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $_privacyPolicyUrl');
+    }
+  }
+
+  Future<void> _launchTermsAndConditions() async {
+    if (!await launchUrl(_termsUrl, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $_termsUrl');
     }
   }
 
@@ -269,6 +290,22 @@ class _MenubarState extends ConsumerState<SidebarMenu> {
                 },
               ),
               _SectionTitle("menu.about".tr()),
+              ListTile(
+                leading: const Icon(Icons.privacy_tip_outlined),
+                title: Text("menu.privacy_policy".tr()),
+                onTap: () {
+                  _launchPrivacyPolicy();
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.gavel_outlined),
+                title: Text("menu.terms_conditions".tr()),
+                onTap: () {
+                  _launchTermsAndConditions();
+                  Navigator.of(context).pop();
+                },
+              ),
               FutureBuilder<PackageInfo>(
                 future: _pkg,
                 builder: (context, snap) {

@@ -104,6 +104,8 @@
 		"export": "Export Subscriptions",
 		"import": "Import Subscriptions",
 		"about": "About",
+		"privacy_policy": "Privacy Policy",
+		"terms_conditions": "Terms & Conditions",
 		"about_desc": "An open source application that allows you to easily track your subscriptions.",
 		"view_github": "View on GitHub",
 		"export_success": "Subscriptions exported successfully!",
