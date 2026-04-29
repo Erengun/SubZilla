@@ -38,7 +38,7 @@ dependencies:
   go_router: ^17.0.1
   table_calendar: ^3.2.0
   intl: ^0.20.2
-  image_picker: ^1.2.0
+  image_picker: ^1.2.2
   path_provider: ^2.1.5
   simple_gravatar_fetch: ^2.0.4+1
   file_picker: ^10.3.10
