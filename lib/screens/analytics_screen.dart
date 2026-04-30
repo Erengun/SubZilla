@@ -15,14 +15,16 @@ class AnalyticsScreen extends HookConsumerWidget {
     final slicesAsync = ref.watch(subsControllerProvider);
     final settingsAsync = ref.watch(settingsControllerProvider);
 
-    return slicesAsync.when(
-      data: (slices) => settingsAsync.when(
-        data: (settings) => buildBody(slices, settings, context),
+    return Scaffold(
+      body: slicesAsync.when(
+        data: (slices) => settingsAsync.when(
+          data: (settings) => buildBody(slices, settings, context),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, stack) => Center(child: Text('Error: $err')),
+        ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
       ),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error: $err')),
     );
   }
 

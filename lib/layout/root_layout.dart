@@ -29,6 +29,7 @@ class RootLayout extends ConsumerWidget {
     }
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
                   title: Text("settings.app_name".tr()),
                   actions: [

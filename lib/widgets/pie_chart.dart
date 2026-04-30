@@ -105,12 +105,10 @@ class _Badge extends StatelessWidget {
           brand: brand,
           size: 28,
         ) :
-                    Flexible(
-        child: Text(
-          label,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.labelMedium,
-        ),
+                    Text(
+                      label,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
       ),
     );

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:subs_tracker/config/fade_extension.dart';
 import 'package:subs_tracker/layout/root_layout.dart';
 import 'package:subs_tracker/providers/settings_controller.dart';
 import 'package:subs_tracker/screens/analytics_screen.dart';
@@ -60,24 +59,24 @@ GoRouter goRouter(Ref ref) {
             builder: (BuildContext context, GoRouterState state) {
               return const OnboardingScreen();
             },
-          ).fade(),
+          ),
           GoRoute(
             path: Routes.calendar.route,
             builder: (BuildContext context, GoRouterState state) {
               return const CalendarScreen();
             },
-          ).fade(),
+          ),
           GoRoute(
             path: Routes.analytics.route,
             builder: (BuildContext context, GoRouterState state) {
               return const AnalyticsScreen();
             },
-          ).fade(),
+          ),
           GoRoute(
             path: Routes.settings.route,
             builder: (BuildContext context, GoRouterState state) =>
                 const SettingsScreen(),
-          ).fade(),
+          ),
         ],
       ),
     ],

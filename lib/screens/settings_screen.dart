@@ -11,10 +11,12 @@ class SettingsScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(settingsControllerProvider);
 
-    return settingsAsync.when(
-      data: (settings) => _buildSettings(context, settings, ref),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error: $err')),
+    return Scaffold(
+      body: settingsAsync.when(
+        data: (settings) => _buildSettings(context, settings, ref),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error: $err')),
+      ),
     );
   }
 
