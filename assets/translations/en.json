@@ -26,7 +26,12 @@
 		"delete_confirm": "Remove {}?",
 		"cancel": "Cancel",
 		"delete": "Delete",
-		"renews_info": "Renews {} • {}"
+		"renews_info": "Renews {} • {}",
+		"renews_today_alert_title": "Renews today",
+		"renews_today_alert_subtitle": "{} subscription(s) renew today",
+		"renews_today_badge": "Today",
+		"sort_soonest": "Soonest",
+		"sort_default": "Default"
 	},
 	"frequency": {
 		"daily": "Daily",
@@ -63,7 +68,14 @@
 		"connect_gravatar": "Connect Gravatar",
 		"username_saved": "User Name Saved!",
 		"email_saved": "Email Saved!",
-		"username_label": "User Name"
+		"username_label": "User Name",
+		"eyebrow": "WELCOME TO SUBZILLA",
+		"headline": "Take back control of every",
+		"headline_accent": "recurring charge.",
+		"subtitle": "Track subscriptions, see what's renewing, and stay on top of your budget — all stored privately on your device.",
+		"get_started": "Get started",
+		"already_user": "Already a user?",
+		"restore_backup": "Restore from backup"
 	},
 	"common": {
 		"back": "Back",

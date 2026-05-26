@@ -26,7 +26,12 @@
 		"delete_confirm": "{} silinsin mi?",
 		"cancel": "İptal",
 		"delete": "Sil",
-		"renews_info": "Yenilenme {} • {}"
+		"renews_info": "Yenilenme {} • {}",
+		"renews_today_alert_title": "Bugün yenileniyor",
+		"renews_today_alert_subtitle": "{} abonelik bugün yenileniyor",
+		"renews_today_badge": "Bugün",
+		"sort_soonest": "En yakın",
+		"sort_default": "Varsayılan"
 	},
 	"frequency": {
 		"daily": "Günlük",
@@ -63,7 +68,14 @@
 		"connect_gravatar": "Gravatar'a Bağlan",
 		"username_saved": "Kullanıcı Adı Kaydedildi!",
 		"email_saved": "E-posta Kaydedildi!",
-		"username_label": "Kullanıcı Adı"
+		"username_label": "Kullanıcı Adı",
+		"eyebrow": "SUBZİLLA'YA HOŞGELDİNİZ",
+		"headline": "Tüm tekrarlayan ödemelerin",
+		"headline_accent": "kontrolünü ele al.",
+		"subtitle": "Aboneliklerinizi takip edin, yenilemeleri görün ve bütçenizi yönetin — tüm veriler cihazınızda özel olarak saklanır.",
+		"get_started": "Başla",
+		"already_user": "Zaten kullanıcı mısınız?",
+		"restore_backup": "Yedeği geri yükle"
 	},
 	"common": {
 		"back": "Geri",
