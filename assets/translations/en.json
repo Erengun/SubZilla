@@ -48,8 +48,6 @@
 		}
 	},
 	"intro": {
-		"title": "Welcome to\nSubZilla",
-		"subtitle": "Track all your subscriptions in one place.\nNever miss a payment again.",
 		"name_title": "What should we\ncall you?",
 		"name_label": "Your Name",
 		"name_hint": "John Doe",
@@ -80,7 +78,11 @@
 		"restore_backup": "Restore from backup",
 		"color_scheme_eyebrow": "APPEARANCE",
 		"color_scheme_title": "Pick your color",
-		"color_scheme_subtitle": "You can change this anytime in settings."
+		"color_scheme_subtitle": "You can change this anytime in settings.",
+		"popular_eyebrow": "POPULAR SUBSCRIPTIONS",
+		"popular_title": "Add your favorites",
+		"popular_subtitle": "Tap + to add any. Skip to set up later.",
+		"popular_cta": "Get started"
 	},
 	"common": {
 		"back": "Back",

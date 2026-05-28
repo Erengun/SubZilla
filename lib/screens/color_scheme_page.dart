@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:subs_tracker/providers/settings_controller.dart';
 import 'package:subs_tracker/utils/app_theme.dart';
 import 'package:subs_tracker/widgets/color_scheme_picker.dart';
+import 'package:simple_icons/simple_icons.dart';
 import 'package:subs_tracker/widgets/floating_sub_card.dart';
 
 class ColorSchemePage extends ConsumerWidget {
@@ -64,6 +65,7 @@ class ColorSchemePage extends ConsumerWidget {
                           textColor: Colors.white,
                           logoColor: Colors.white.withValues(alpha: 0.22),
                           logoInitials: 'N',
+                          logoIcon: SimpleIcons.values['netflix'],
                           phaseOffset: 0.3,
                           width: 178,
                         ),

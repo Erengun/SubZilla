@@ -3,6 +3,7 @@ import 'dart:ui' show lerpDouble;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:simple_icons/simple_icons.dart';
 import 'package:subs_tracker/widgets/floating_sub_card.dart';
 
 class IntroPage extends HookWidget {
@@ -86,6 +87,7 @@ class IntroPage extends HookWidget {
                         textColor: darkCardText,
                         logoColor: const Color(0xFFE50914),
                         logoInitials: 'N',
+                        logoIcon: SimpleIcons.values['netflix'],
                         phaseOffset: 0.0,
                       ),
                     ),
@@ -102,6 +104,7 @@ class IntroPage extends HookWidget {
                       textColor: lightCardText,
                       logoColor: const Color(0xFF1DB954),
                       logoInitials: 'S',
+                      logoIcon: SimpleIcons.values['spotify'],
                       phaseOffset: 0.2,
                     ),
                   ),
@@ -133,6 +136,7 @@ class IntroPage extends HookWidget {
                       textColor: lightCardText,
                       logoColor: const Color(0xFF00A8E0),
                       logoInitials: 'a',
+                      logoIcon: SimpleIcons.values['amazonprime'],
                       width: 148,
                       phaseOffset: 0.6,
                     ),
@@ -149,6 +153,7 @@ class IntroPage extends HookWidget {
                       textColor: darkCardText,
                       logoColor: cs.surface,
                       logoInitials: 'GH',
+                      logoIcon: SimpleIcons.values['github'],
                       width: 148,
                       phaseOffset: 0.8,
                     ),

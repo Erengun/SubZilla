@@ -10,6 +10,7 @@ Use caveman skill. Terse responses. Drop filler, articles, hedging. Fragments OK
 
 **Prefer TDD when practical:** write or adjust failing tests first for new behavior or bug fixes, then implement until green; skip only where a test would not add signal (e.g. pure UI snapshot churn) — default bias is test-first.
 
+- use superpowers
 - **Subagent-driven development** for implementation plans with independent tasks — use `superpowers:subagent-driven-development` skill.
 - **MCP over CLI** for Dart/Flutter tooling (analysis, fixes, project queries) when the MCP tool covers the task.
 - dont use git commands.

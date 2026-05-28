@@ -48,8 +48,6 @@
 		}
 	},
 	"intro": {
-		"title": "SubZilla'ya\nHoş Geldiniz",
-		"subtitle": "Tüm aboneliklerinizi tek bir yerden takip edin.\nÖdemelerinizi bir daha asla kaçırmayın.",
 		"name_title": "Size nasıl\nhitap edelim?",
 		"name_label": "Adınız",
 		"name_hint": "Ali Yılmaz",
@@ -80,7 +78,11 @@
 		"restore_backup": "Yedeği geri yükle",
 		"color_scheme_eyebrow": "GÖRÜNÜM",
 		"color_scheme_title": "Renginizi seçin",
-		"color_scheme_subtitle": "Bunu ayarlardan istediğiniz zaman değiştirebilirsiniz."
+		"color_scheme_subtitle": "Bunu ayarlardan istediğiniz zaman değiştirebilirsiniz.",
+		"popular_eyebrow": "POPÜLER ABONELİKLER",
+		"popular_title": "Favorilerini ekle",
+		"popular_subtitle": "Eklemek için + 'ya dokun. İstediğin zaman geçebilirsin.",
+		"popular_cta": "Başla"
 	},
 	"common": {
 		"back": "Geri",

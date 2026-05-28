@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:subs_tracker/widgets/intro_page.dart';
+import 'package:subs_tracker/screens/intro_page.dart';
 
 void main() {
   testWidgets('IntroPage calls onGetStarted when CTA tapped', (tester) async {
