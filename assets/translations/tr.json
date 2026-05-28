@@ -153,5 +153,27 @@
 		"weekly": "HAFTALIK",
 		"monthly": "AYLIK",
 		"yearly": "YILLIK"
+	},
+	"detail": {
+		"back": "Abonelikler",
+		"active": "Aktif",
+		"cost": "TUTAR",
+		"per_frequency": "{} başına",
+		"next_charge": "SONRAKI ÖDEME",
+		"in_days": "{} gün sonra",
+		"today": "bugün",
+		"section_details": "DETAYLAR",
+		"section_history": "ÖDEME GEÇMİŞİ",
+		"see_all": "Tümünü gör",
+		"billing_cycle": "Fatura döngüsü",
+		"started": "Başlangıç",
+		"payment_method": "Ödeme yöntemi",
+		"category": "Kategori",
+		"reminder": "Hatırlatıcı",
+		"not_set": "—",
+		"delete": "Aboneliği Sil",
+		"delete_confirm": "{} aboneliğini silmek istediğinizden emin misiniz?",
+		"delete_action": "Sil",
+		"cancel": "İptal"
 	}
 }

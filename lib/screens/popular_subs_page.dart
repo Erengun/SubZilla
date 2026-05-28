@@ -118,6 +118,7 @@ class PopularSubsPage extends HookConsumerWidget {
                             color: _colorForBrand(brand),
                             startDate: DateTime.now(),
                             frequency: Frequency.monthly,
+                            brand: brand,
                           ),
                         );
                       },

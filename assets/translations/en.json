@@ -153,5 +153,27 @@
 		"weekly": "WEEKLY",
 		"monthly": "MONTHLY",
 		"yearly": "YEARLY"
+	},
+	"detail": {
+		"back": "Subs",
+		"active": "Active",
+		"cost": "COST",
+		"per_frequency": "per {}",
+		"next_charge": "NEXT CHARGE",
+		"in_days": "in {} days",
+		"today": "today",
+		"section_details": "DETAILS",
+		"section_history": "PAYMENT HISTORY",
+		"see_all": "See all",
+		"billing_cycle": "Billing cycle",
+		"started": "Started",
+		"payment_method": "Payment method",
+		"category": "Category",
+		"reminder": "Reminder",
+		"not_set": "—",
+		"delete": "Delete Subscription",
+		"delete_confirm": "Are you sure you want to delete {}?",
+		"delete_action": "Delete",
+		"cancel": "Cancel"
 	}
 }

@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:subs_tracker/layout/root_layout.dart';
+import 'package:subs_tracker/models/sub_slice.dart';
 import 'package:subs_tracker/providers/settings_controller.dart';
 import 'package:subs_tracker/screens/analytics_screen.dart';
 import 'package:subs_tracker/screens/app_startup.dart';
@@ -10,6 +11,7 @@ import 'package:subs_tracker/screens/calendar_screen.dart';
 import 'package:subs_tracker/screens/home_screen.dart';
 import 'package:subs_tracker/screens/onboarding_screen.dart';
 import 'package:subs_tracker/screens/settings_screen.dart';
+import 'package:subs_tracker/screens/sub_detail_screen.dart';
 
 part 'router_config.g.dart';
 
@@ -18,7 +20,8 @@ enum Routes {
   analytics,
   intro,
   settings,
-  calendar;
+  calendar,
+  subscription;
 
   String get name => toString().replaceAll('Routes.', '');
   String get route => '/$name';
@@ -78,6 +81,16 @@ GoRouter goRouter(Ref ref) {
                 const SettingsScreen(),
           ),
         ],
+      ),
+      GoRoute(
+        path: Routes.subscription.route,
+        builder: (context, state) {
+          final extra = state.extra! as Map<String, dynamic>;
+          return SubDetailScreen(
+            slice: extra['slice'] as SubSlice,
+            index: extra['index'] as int,
+          );
+        },
       ),
     ],
   );

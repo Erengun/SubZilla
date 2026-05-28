@@ -1,13 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:subs_tracker/config/router_config.dart';
 import 'package:subs_tracker/models/settings_view_model.dart';
 import 'package:subs_tracker/models/sub_slice.dart';
 import 'package:subs_tracker/providers/settings_controller.dart';
 import 'package:subs_tracker/providers/subs_controller.dart';
 import 'package:subs_tracker/widgets/add_subs_dialog.dart';
 import 'package:subs_tracker/widgets/brand_logo.dart';
-import 'package:subs_tracker/widgets/edit_subs_dialog.dart';
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
@@ -256,12 +257,9 @@ class _CompactSubscriptionTile extends ConsumerWidget {
         ),
         child: GestureDetector(
           onTap: () {
-            showAdaptiveDialog<void>(
-              context: context,
-              builder: (_) => EditSubsDialog(
-                slice: slice,
-                index: index,
-              ),
+            context.push(
+              Routes.subscription.route,
+              extra: {'slice': slice, 'index': index},
             );
           },
           child: Container(
