@@ -6,6 +6,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Use caveman skill. Terse responses. Drop filler, articles, hedging. Fragments OK. Technical terms exact. Code unchanged.
 
+**Prefer MCP over raw terminal** for tooling — especially **Dart/Flutter**: use the configured Dart MCP server (analysis, fixes, project queries) before defaulting to CLI-only workflows when the MCP tool covers the task.
+
+**Prefer TDD when practical:** write or adjust failing tests first for new behavior or bug fixes, then implement until green; skip only where a test would not add signal (e.g. pure UI snapshot churn) — default bias is test-first.
+
+- **Subagent-driven development** for implementation plans with independent tasks — use `superpowers:subagent-driven-development` skill.
+- **MCP over CLI** for Dart/Flutter tooling (analysis, fixes, project queries) when the MCP tool covers the task.
+- dont use git commands.
+- **UI/UX Excellence:** Exhibit impeccable skill in frontend design. Deliver modern, polished, and pixel-perfect layouts with exceptional attention to spacing, typography, and visual hierarchy.
+- dont use git commands.
+
 ## Commands
 
 ```bash

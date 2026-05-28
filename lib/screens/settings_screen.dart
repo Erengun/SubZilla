@@ -1,8 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:subs_tracker/models/settings_view_model.dart';
 import 'package:subs_tracker/providers/settings_controller.dart';
+import 'package:subs_tracker/utils/app_theme.dart';
+import 'package:subs_tracker/widgets/color_scheme_picker.dart';
 
 class SettingsScreen extends HookConsumerWidget {
   const SettingsScreen({super.key});
@@ -44,6 +47,11 @@ class SettingsScreen extends HookConsumerWidget {
                 title: "settings.theme".tr(),
                 subtitle: _getThemeLabel(settings.theme).tr(),
                 onTap: () => _showThemeBottomSheet(context, settings, ref),
+              ),
+              _SettingsTile(
+                title: "settings.color_scheme".tr(),
+                subtitle: schemeDisplayName(settings.colorScheme),
+                onTap: () => _showColorSchemeBottomSheet(context, settings, ref),
               ),
             ],
           ),
@@ -90,6 +98,14 @@ class SettingsScreen extends HookConsumerWidget {
                 subtitle: "SubZilla",
                 onTap: null,
               ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Developer Section
+          _SettingsSection(
+            title: "Developer",
+            children: [
+              _ResetOnboardingTile(ref: ref),
             ],
           ),
         ],
@@ -140,6 +156,44 @@ class SettingsScreen extends HookConsumerWidget {
                           Navigator.pop(context);
                         },
                       )),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showColorSchemeBottomSheet(
+    BuildContext context,
+    SettingsViewModel settings,
+    WidgetRef ref,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  "settings.select_color_scheme".tr(),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+              ColorSchemePicker(
+                selectedScheme: settings.colorScheme,
+                onSchemeSelected: (scheme) {
+                  ref
+                      .read(settingsControllerProvider.notifier)
+                      .updateColorScheme(scheme);
+                  Navigator.pop(context);
+                },
+              ),
               const SizedBox(height: 16),
             ],
           ),
@@ -354,6 +408,61 @@ class _CurrencyOption extends StatelessWidget {
               color: Theme.of(context).primaryColor)
           : const Icon(Icons.radio_button_unchecked),
       onTap: onTap,
+    );
+  }
+}
+
+class _ResetOnboardingTile extends StatelessWidget {
+  const _ResetOnboardingTile({required this.ref});
+
+  final WidgetRef ref;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: cs.errorContainer.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: cs.error.withValues(alpha: 0.3)),
+      ),
+      child: ListTile(
+        title: Text(
+          'Reset onboarding',
+          style: TextStyle(color: cs.error, fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          'Show intro screens again',
+          style: TextStyle(color: cs.error.withValues(alpha: 0.7)),
+        ),
+        leading: Icon(Icons.restart_alt_rounded, color: cs.error),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        onTap: () async {
+          final confirmed = await showDialog<bool>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Reset onboarding?'),
+              content: const Text('This will show the intro screens on next app launch.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  style: FilledButton.styleFrom(backgroundColor: cs.error),
+                  child: const Text('Reset'),
+                ),
+              ],
+            ),
+          );
+          if (confirmed == true && context.mounted) {
+            ref.read(settingsControllerProvider.notifier).updateIsFirstTime(true);
+            context.go('/intro');
+          }
+        },
+      ),
     );
   }
 }

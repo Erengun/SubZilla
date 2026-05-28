@@ -5,6 +5,32 @@ import 'package:flutter/material.dart';
 /// Brand coral — same value used as surfaceTint in AppTheme light theme.
 const Color kCoralAccent = Color(0xFFD83434);
 
+const List<(FlexScheme, String)> kCuratedSchemes = [
+  (FlexScheme.bahamaBlue,  'Bahama Blue'),
+  (FlexScheme.blue,        'Blue'),
+  (FlexScheme.indigo,      'Indigo'),
+  (FlexScheme.hippieBlue,  'Hippie Blue'),
+  (FlexScheme.aquaBlue,    'Aqua Blue'),
+  (FlexScheme.deepPurple,  'Deep Purple'),
+  (FlexScheme.purpleM3,    'Purple'),
+  (FlexScheme.pinkM3,      'Pink'),
+  (FlexScheme.sakura,      'Sakura'),
+  (FlexScheme.mandyRed,    'Red'),
+  (FlexScheme.orangeM3,    'Orange'),
+  (FlexScheme.amber,       'Amber'),
+  (FlexScheme.greenM3,     'Green'),
+  (FlexScheme.tealM3,      'Teal'),
+  (FlexScheme.blueWhale,   'Blue Whale'),
+  (FlexScheme.espresso,    'Espresso'),
+];
+
+String schemeDisplayName(FlexScheme scheme) {
+  for (final (s, name) in kCuratedSchemes) {
+    if (s == scheme) return name;
+  }
+  return scheme.name;
+}
+
 /// The [AppTheme] defines light and dark themes for the app.
 ///
 /// Theme setup for FlexColorScheme package v8.

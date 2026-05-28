@@ -7,6 +7,8 @@
 		"dark": "Dark",
 		"system": "System",
 		"select_theme": "Select Theme",
+		"color_scheme": "Color Scheme",
+		"select_color_scheme": "Select Color Scheme",
 		"currency": "Currency",
 		"currency_unit": "Currency Unit",
 		"select_currency": "Select Currency",
@@ -75,7 +77,10 @@
 		"subtitle": "Track subscriptions, see what's renewing, and stay on top of your budget — all stored privately on your device.",
 		"get_started": "Get started",
 		"already_user": "Already a user?",
-		"restore_backup": "Restore from backup"
+		"restore_backup": "Restore from backup",
+		"color_scheme_eyebrow": "APPEARANCE",
+		"color_scheme_title": "Pick your color",
+		"color_scheme_subtitle": "You can change this anytime in settings."
 	},
 	"common": {
 		"back": "Back",

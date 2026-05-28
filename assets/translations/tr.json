@@ -7,6 +7,8 @@
 		"dark": "Koyu",
 		"system": "Sistem",
 		"select_theme": "Tema Seç",
+		"color_scheme": "Renk Teması",
+		"select_color_scheme": "Renk Teması Seç",
 		"currency": "Para Birimi",
 		"currency_unit": "Para Birimi",
 		"select_currency": "Para Birimi Seç",
@@ -75,7 +77,10 @@
 		"subtitle": "Aboneliklerinizi takip edin, yenilemeleri görün ve bütçenizi yönetin — tüm veriler cihazınızda özel olarak saklanır.",
 		"get_started": "Başla",
 		"already_user": "Zaten kullanıcı mısınız?",
-		"restore_backup": "Yedeği geri yükle"
+		"restore_backup": "Yedeği geri yükle",
+		"color_scheme_eyebrow": "GÖRÜNÜM",
+		"color_scheme_title": "Renginizi seçin",
+		"color_scheme_subtitle": "Bunu ayarlardan istediğiniz zaman değiştirebilirsiniz."
 	},
 	"common": {
 		"back": "Geri",
