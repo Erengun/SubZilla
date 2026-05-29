@@ -44,12 +44,17 @@ class HomeScreen extends HookConsumerWidget {
             Center(child: Text("home.no_subs".tr())),
             const SizedBox(height: 12),
             TextButton(
-              onPressed: () {
-                showAdaptiveDialog<SubSlice>(
-                  context: context,
-                  builder: (_) => const AddSubsDialog(),
-                );
-              },
+              onPressed: () => showModalBottomSheet<void>(
+                context: context,
+                isScrollControlled: true,
+                useSafeArea: true,
+                builder: (ctx) => Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                  ),
+                  child: const AddSubsSheet(),
+                ),
+              ),
               child: Text("home.add_sub".tr()),
             ),
           ],

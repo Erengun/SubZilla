@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:subs_tracker/config/router_config.dart';
-import 'package:subs_tracker/models/sub_slice.dart';
 import 'package:subs_tracker/providers/settings_controller.dart';
 import 'package:subs_tracker/providers/subs_controller.dart';
 import 'package:subs_tracker/widgets/add_subs_dialog.dart';
@@ -251,9 +250,16 @@ class _MenubarState extends ConsumerState<SidebarMenu> {
                 onTap: () async {
                   Navigator.pop(context);
 
-                  await showAdaptiveDialog<SubSlice>(
+                  await showModalBottomSheet<void>(
                     context: context,
-                    builder: (_) => const AddSubsDialog(),
+                    isScrollControlled: true,
+                    useSafeArea: true,
+                    builder: (ctx) => Padding(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                      ),
+                      child: const AddSubsSheet(),
+                    ),
                   );
                 },
               ),

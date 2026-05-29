@@ -2,10 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:simple_icons/simple_icons.dart';
 import 'package:subs_tracker/providers/settings_controller.dart';
 import 'package:subs_tracker/utils/app_theme.dart';
 import 'package:subs_tracker/widgets/color_scheme_picker.dart';
-import 'package:simple_icons/simple_icons.dart';
 import 'package:subs_tracker/widgets/floating_sub_card.dart';
 
 class ColorSchemePage extends ConsumerWidget {

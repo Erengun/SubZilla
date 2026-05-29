@@ -93,6 +93,7 @@
 	},
 	"dialogs": {
 		"add_title": "Add Subscription",
+		"new_sub_title": "New Subscription",
 		"edit_title": "Edit Subscription",
 		"custom_color": "Custom color",
 		"cancel": "Cancel",
@@ -100,8 +101,11 @@
 		"brand_label": "Brand or custom name",
 		"required": "Required",
 		"amount_label": "Amount",
+		"price_label": "Price",
 		"invalid_number": "Enter a valid number",
 		"start_date": "Start date",
+		"first_charge": "First charge",
+		"cycle_label": "Cycle",
 		"frequency_label": "Frequency",
 		"slice_color": "Slice color",
 		"custom_color_selected": "Custom color selected",
@@ -110,7 +114,11 @@
 		"save_btn": "Save",
 		"close_btn": "Close",
 		"error_loading": "Error loading brands: {}",
-		"selected_tooltip": "Selected: {}"
+		"selected_tooltip": "Selected: {}",
+		"name_label": "Name",
+		"search_placeholder": "Search {}+ services",
+		"popular": "POPULAR",
+		"or_enter_manually": "OR ENTER MANUALLY"
 	},
 	"menu": {
 		"main_menu": "Main Menu",
@@ -141,12 +149,17 @@
 		"no_data": "No subscription data to analyze yet.",
 		"title": "Subscription Analytics",
 		"summary": "Summary",
-		"total_monthly": "Total Monthly Spending",
-		"active_subs": "Active Subscriptions",
-		"avg_cost": "Average Monthly Cost",
+		"total_monthly": "Monthly Total",
+		"total_quarterly": "3-Month Total",
+		"total_yearly": "Annual Total",
+		"active_subs": "Active Subs",
+		"avg_cost": "Avg. Cost",
 		"breakdown": "Breakdown by Subscription",
 		"per_month": "/mo",
-		"percent_total": "% of total"
+		"percent_total": "% of total",
+		"period_month": "Month",
+		"period_quarter": "3 Months",
+		"period_year": "Year"
 	},
 	"frequency_names": {
 		"daily": "DAILY",
