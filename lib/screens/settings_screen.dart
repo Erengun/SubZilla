@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -101,7 +102,7 @@ class SettingsScreen extends HookConsumerWidget {
             ],
           ),
           const SizedBox(height: 24),
-          // Developer Section
+        if (kDebugMode)
           _SettingsSection(
             title: "Developer",
             children: [
