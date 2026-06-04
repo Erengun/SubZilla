@@ -332,33 +332,11 @@ class _CompactSliceLeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return slice.brand != null
-        ? BrandLogo(brand: slice.brand, size: 40)
-        : Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Color(slice.color),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: SubAvatar(s: slice),
-          );
-  }
-}
-
-
-class SubAvatar extends StatelessWidget {
-  const SubAvatar({super.key, required this.s});
-
-  final SubSlice s;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        s.name[0].toUpperCase(),
-        style: const TextStyle(color: Colors.white, fontSize: 20),
-      ),
+    return SubLeadingIcon(
+      name: slice.name,
+      brand: slice.brand,
+      color: Color(slice.color),
+      size: 40,
     );
   }
 }
