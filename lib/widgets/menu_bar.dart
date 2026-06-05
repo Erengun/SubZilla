@@ -251,6 +251,7 @@ class _MenubarState extends ConsumerState<SidebarMenu> {
                   Navigator.pop(context);
 
                   await showModalBottomSheet<void>(
+                    useRootNavigator: true,
                     context: context,
                     isScrollControlled: true,
                     useSafeArea: true,

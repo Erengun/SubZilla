@@ -44,6 +44,7 @@ class _ChooseOrEditPPState extends ConsumerState<EditUserProfileDialog> {
   /// with the corresponding [ImageSource].
   void _showImageSourceOptions() {
     showModalBottomSheet(
+      useRootNavigator: true,
       context: context,
       builder: (context) {
         return SafeArea(

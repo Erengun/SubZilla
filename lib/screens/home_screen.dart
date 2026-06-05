@@ -9,6 +9,7 @@ import 'package:subs_tracker/providers/settings_controller.dart';
 import 'package:subs_tracker/providers/subs_controller.dart';
 import 'package:subs_tracker/widgets/add_subs_dialog.dart';
 import 'package:subs_tracker/widgets/brand_logo.dart';
+import 'package:subs_tracker/widgets/sub_zilla_app_bar.dart';
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
@@ -19,6 +20,21 @@ class HomeScreen extends HookConsumerWidget {
     final settingsAsync = ref.watch(settingsControllerProvider);
 
     return Scaffold(
+      appBar: SubZillaAppBar(
+        trailing: IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () => showModalBottomSheet<void>(
+            useRootNavigator: true,
+            context: context,
+            isScrollControlled: true,
+            useSafeArea: true,
+            builder: (ctx) => Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+              child: const AddSubsSheet(),
+            ),
+          ),
+        ),
+      ),
       body: slicesAsync.when(
         data: (slices) => settingsAsync.when(
           data: (settings) => buildBody(slices, settings, context, ref),
@@ -45,6 +61,7 @@ class HomeScreen extends HookConsumerWidget {
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => showModalBottomSheet<void>(
+                useRootNavigator: true,
                 context: context,
                 isScrollControlled: true,
                 useSafeArea: true,

@@ -163,6 +163,7 @@ void _showColorPicker(
   void Function(int) onColorSelected,
 ) {
   showModalBottomSheet<void>(
+    useRootNavigator: true,
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
@@ -347,6 +348,7 @@ void _showCategoryPicker(
   void Function(String?) onSelected,
 ) {
   showModalBottomSheet<void>(
+    useRootNavigator: true,
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(

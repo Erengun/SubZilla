@@ -47,6 +47,7 @@ dependencies:
   shared_preferences: ^2.5.5
   easy_localization: ^3.0.8
   simple_icons: ^14.6.1
+  motor: ^1.1.0
 
 dependency_overrides:
   simple_icons:
