@@ -8,7 +8,7 @@ class SubZillaAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   final Widget? trailing;
   @override
-  Size get preferredSize => const Size.fromHeight(56.0);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
