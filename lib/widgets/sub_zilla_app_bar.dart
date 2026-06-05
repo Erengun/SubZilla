@@ -13,6 +13,7 @@ class SubZillaAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoNavigationBar(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       automaticallyImplyLeading: true,
       leading: rootScaffoldKey.currentState?.hasDrawer == true
           ? IconButton(
