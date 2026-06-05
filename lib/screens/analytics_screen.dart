@@ -2,12 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:subs_tracker/models/settings_view_model.dart';
-import 'package:subs_tracker/models/sub_slice.dart';
-import 'package:subs_tracker/providers/settings_controller.dart';
-import 'package:subs_tracker/providers/subs_controller.dart';
-import 'package:subs_tracker/widgets/pie_chart.dart';
-import 'package:subs_tracker/widgets/sub_zilla_app_bar.dart';
+import '../models/settings_view_model.dart';
+import '../models/sub_slice.dart';
+import '../providers/settings_controller.dart';
+import '../providers/subs_controller.dart';
+import '../widgets/pie_chart.dart';
+import '../widgets/sub_zilla_app_bar.dart';
 
 enum _Period { month, quarter, year }
 
@@ -41,7 +41,7 @@ class AnalyticsScreen extends HookConsumerWidget {
     final period = useState(_Period.month);
 
     return Scaffold(
-      appBar: SubZillaAppBar(),
+      appBar: const SubZillaAppBar(),
       body: slicesAsync.when(
         data: (slices) => settingsAsync.when(
           data: (settings) => _buildBody(slices, settings, context, period),

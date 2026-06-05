@@ -78,13 +78,12 @@ class _GlassNavBarState extends State<GlassNavBar>
         borderRadius: BorderRadius.circular(28),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
+          child: DecoratedBox(
             decoration: BoxDecoration(
               color: cs.surfaceContainerHighest.withValues(alpha: 0.75),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
                 color: cs.outline.withValues(alpha: 0.2),
-                width: 1,
               ),
             ),
             child: LayoutBuilder(

@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:subs_tracker/providers/settings_controller.dart';
+import '../providers/settings_controller.dart';
 
 class AppStartup extends ConsumerStatefulWidget {
   const AppStartup({super.key , required this.child});
@@ -22,7 +22,7 @@ class _AppStartupState extends ConsumerState<AppStartup> {
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => Center(
-        child: Text("common.error_generic".tr()),
+        child: Text('common.error_generic'.tr()),
       ),
     );
   }

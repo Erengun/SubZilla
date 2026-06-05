@@ -2,11 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:subs_tracker/models/brand.dart';
-import 'package:subs_tracker/models/sub_slice.dart';
-import 'package:subs_tracker/providers/subs_controller.dart';
-import 'package:subs_tracker/utils/color_utils.dart';
-import 'package:subs_tracker/widgets/brand_logo.dart';
+import '../models/brand.dart';
+import '../models/sub_slice.dart';
+import '../providers/subs_controller.dart';
+import '../utils/color_utils.dart';
+import 'brand_logo.dart';
 
 class SubsPie extends ConsumerStatefulWidget {
   const SubsPie({super.key});
@@ -23,9 +23,9 @@ class _SubsPieState extends ConsumerState<SubsPie> {
     final slicesAsync = ref.watch(subsControllerProvider);
 
     return slicesAsync.when(
-      error: (e, st) => Center(child: Text("common.error_generic".tr())),
+      error: (e, st) => Center(child: Text('common.error_generic'.tr())),
       loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-      data: (slices) => _buildChart(slices),
+      data: _buildChart,
     );
   }
 
@@ -89,7 +89,7 @@ class _Badge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(10),

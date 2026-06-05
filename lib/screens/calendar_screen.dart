@@ -2,11 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:subs_tracker/models/sub_slice.dart';
-import 'package:subs_tracker/providers/subs_controller.dart';
-import 'package:subs_tracker/widgets/brand_logo.dart';
-import 'package:subs_tracker/widgets/sub_zilla_app_bar.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+import '../models/sub_slice.dart';
+import '../providers/subs_controller.dart';
+import '../widgets/brand_logo.dart';
+import '../widgets/sub_zilla_app_bar.dart';
 
 class CalendarScreen extends HookConsumerWidget {
   const CalendarScreen({super.key});
@@ -48,17 +49,17 @@ class CalendarScreen extends HookConsumerWidget {
     }
 
     return Scaffold(
-      appBar: SubZillaAppBar(),
+      appBar: const SubZillaAppBar(),
       body: subsAsync.when(
         data: (subs) {
-          final List<SubSlice> selectedEvents = selectedDay.value == null
-              ? []
+          final selectedEvents = selectedDay.value == null
+              ? <SubSlice>[]
               : getEventsForDay(selectedDay.value!, subs);
 
           return Column(
             children: [
               TableCalendar<SubSlice>(
-                firstDay: DateTime.utc(2020, 1, 1),
+                firstDay: DateTime.utc(2020),
                 lastDay: DateTime.utc(2030, 12, 31),
                 focusedDay: focusedDay.value,
                 selectedDayPredicate: (day) => isSameDay(selectedDay.value, day),
@@ -68,7 +69,7 @@ class CalendarScreen extends HookConsumerWidget {
                 },
                 eventLoader: (day) => getEventsForDay(day, subs),
                 calendarStyle: CalendarStyle(
-                  cellMargin: const EdgeInsets.all(8.0),
+                  cellMargin: const EdgeInsets.all(8),
                   markerDecoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
                     shape: BoxShape.circle,
@@ -92,12 +93,11 @@ class CalendarScreen extends HookConsumerWidget {
                 child: ListView.builder(
                   itemCount: selectedEvents.length,
                   itemBuilder: (context, index) {
-                    final sub = selectedEvents[index];
+                    final  sub = selectedEvents[index];
                     return ListTile(
                       leading: sub.brand != null
                           ? BrandLogo(
                               brand: sub.brand,
-                              size: 32,
                             )
                           : CircleAvatar(
                               radius: 16,
@@ -108,7 +108,7 @@ class CalendarScreen extends HookConsumerWidget {
                       subtitle: Text(
                         NumberFormat.simpleCurrency().format(sub.amount),
                       ),
-                      trailing: Text("frequency_names.${sub.frequency.name}".tr()),
+                      trailing: Text('frequency_names.${sub.frequency.name}'.tr()),
                     );
                   },
                 ),

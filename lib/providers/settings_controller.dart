@@ -6,18 +6,16 @@ import 'package:riverpod_annotation/experimental/persist.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:riverpod_sqflite/riverpod_sqflite.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:subs_tracker/models/settings_view_model.dart';
+import '../models/settings_view_model.dart';
 
 part 'settings_controller.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<JsonSqFliteStorage> settingsStorage(Ref ref) async {
-  JsonSqFliteStorage storage = await JsonSqFliteStorage.open(
+  final storage = await JsonSqFliteStorage.open(
     join(await getDatabasesPath(), 'settings.db'),
   );
-  ref
-    ..onDispose(storage.close)
-    ..keepAlive();
+  ref.onDispose(storage.close);
   return storage;
 }
 
@@ -28,13 +26,13 @@ class SettingsController extends _$SettingsController {
   FutureOr<SettingsViewModel> build() async {
     await persist(
       ref.watch(settingsStorageProvider.future),
-      options: StorageOptions(
+      options: const StorageOptions(
         cacheTime: StorageCacheTime.unsafe_forever,
-        destroyKey: "v1",
+        destroyKey: 'v1',
       ),
     ).future;
     return state.value ??
-        SettingsViewModel(
+        const SettingsViewModel(
           theme: ThemeMode.light,
           currency: Currency.try_,
           isFirstTime: true,
@@ -61,7 +59,7 @@ class SettingsController extends _$SettingsController {
     state = AsyncData(state.value!.copyWith(email: userEmail));
   }
 
-  void updateIsFirstTime(bool isFirstTime) {
+  void updateIsFirstTime({required bool isFirstTime}) {
     state = AsyncData(state.value!.copyWith(isFirstTime: isFirstTime));
   }
 }

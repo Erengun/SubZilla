@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:subs_tracker/models/brand.dart';
-import 'package:subs_tracker/models/sub_slice.dart';
-import 'package:subs_tracker/providers/brands_provider.dart';
-import 'package:subs_tracker/providers/settings_controller.dart';
-import 'package:subs_tracker/providers/subs_controller.dart';
-import 'package:subs_tracker/utils/color_palette.dart';
-import 'package:subs_tracker/widgets/brand_logo.dart';
+import '../models/brand.dart';
+import '../models/sub_slice.dart';
+import '../providers/brands_provider.dart';
+import '../providers/settings_controller.dart';
+import '../providers/subs_controller.dart';
+import '../utils/color_palette.dart';
+import 'brand_logo.dart';
 
 const _kPopularBrandNames = [
   'Netflix',
@@ -25,7 +25,7 @@ class AddSubsSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final formKey = useMemoized(() => GlobalKey<FormState>());
+    final formKey = useMemoized(GlobalKey<FormState>.new);
     final searchCtrl = useTextEditingController();
     final nameCtrl = useTextEditingController();
     final amountCtrl = useTextEditingController();
@@ -34,7 +34,6 @@ class AddSubsSheet extends HookConsumerWidget {
 
     final draftSlice = useState<SubSlice>(
       SubSlice(
-        brand: null,
         name: '',
         amount: 0,
         color: kSliceColors.first.toARGB32(),
@@ -44,7 +43,7 @@ class AddSubsSheet extends HookConsumerWidget {
 
     final settingsAsync = ref.watch(settingsControllerProvider);
     final currencySymbol =
-        settingsAsync.asData?.value.currency.symbol ?? '\$';
+        settingsAsync.asData?.value.currency.symbol ?? r'$';
 
     void selectBrand(Brand brand) {
       draftSlice.value = draftSlice.value.copyWith(brand: brand, name: brand.text);
@@ -57,8 +56,8 @@ class AddSubsSheet extends HookConsumerWidget {
     }
 
     Future<void> openCustomColorPicker() async {
-      Color tempColor = Color(draftSlice.value.color);
-      final Color? result = await showDialog<Color>(
+      var tempColor = Color(draftSlice.value.color);
+      final result = await showDialog<Color>(
         context: context,
         builder: (dialogContext) {
           return StatefulBuilder(
@@ -72,7 +71,6 @@ class AddSubsSheet extends HookConsumerWidget {
                       tempColor = color;
                     }),
                     enableAlpha: false,
-                    paletteType: PaletteType.hsvWithHue,
                     labelTypes: const [],
                     pickerAreaBorderRadius: const BorderRadius.all(
                       Radius.circular(12),
@@ -207,7 +205,7 @@ class AddSubsSheet extends HookConsumerWidget {
                         textEditingController: searchCtrl,
                         focusNode: brandFocusNode,
                         displayStringForOption: (option) => option.text,
-                        optionsBuilder: (TextEditingValue textEditingValue) {
+                        optionsBuilder: (textEditingValue) {
                           if (textEditingValue.text.trim().isEmpty) {
                             return const Iterable<Brand>.empty();
                           }
@@ -217,9 +215,7 @@ class AddSubsSheet extends HookConsumerWidget {
                                 option.text.toLowerCase().contains(query),
                           );
                         },
-                        onSelected: (Brand selection) {
-                          selectBrand(selection);
-                        },
+                        onSelected: selectBrand,
                         fieldViewBuilder: (
                           context,
                           textEditingController,
@@ -381,7 +377,7 @@ class AddSubsSheet extends HookConsumerWidget {
                       // Grouped form card
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Container(
+                        child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: theme.colorScheme.surfaceContainerHigh,
                             borderRadius: BorderRadius.circular(12),
@@ -501,7 +497,6 @@ class AddSubsSheet extends HookConsumerWidget {
                                     ),
                                     Expanded(
                                       child: SegmentedButton<Frequency>(
-                                        multiSelectionEnabled: false,
                                         showSelectedIcon: false,
                                         style: SegmentedButton.styleFrom(
                                           padding: EdgeInsets.zero,
@@ -739,9 +734,9 @@ class AddSubsSheet extends HookConsumerWidget {
     final brandsAsync = ref.watch(brandsProvider);
 
     return brandsAsync.when(
-      data: (allBrands) => buildSheetContent(allBrands),
-      loading: () => _SheetSkeleton(
-        child: const SizedBox(
+      data: buildSheetContent,
+      loading: () => const _SheetSkeleton(
+        child: SizedBox(
           height: 80,
           child: Center(child: CircularProgressIndicator()),
         ),

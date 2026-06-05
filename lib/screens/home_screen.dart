@@ -2,14 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:subs_tracker/config/router_config.dart';
-import 'package:subs_tracker/models/settings_view_model.dart';
-import 'package:subs_tracker/models/sub_slice.dart';
-import 'package:subs_tracker/providers/settings_controller.dart';
-import 'package:subs_tracker/providers/subs_controller.dart';
-import 'package:subs_tracker/widgets/add_subs_dialog.dart';
-import 'package:subs_tracker/widgets/brand_logo.dart';
-import 'package:subs_tracker/widgets/sub_zilla_app_bar.dart';
+import '../config/router_config.dart';
+import '../models/settings_view_model.dart';
+import '../models/sub_slice.dart';
+import '../providers/settings_controller.dart';
+import '../providers/subs_controller.dart';
+import '../widgets/add_subs_dialog.dart';
+import '../widgets/brand_logo.dart';
+import '../widgets/sub_zilla_app_bar.dart';
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
@@ -57,7 +57,7 @@ class HomeScreen extends HookConsumerWidget {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(child: Text("home.no_subs".tr())),
+            Center(child: Text('home.no_subs'.tr())),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => showModalBottomSheet<void>(
@@ -72,7 +72,7 @@ class HomeScreen extends HookConsumerWidget {
                   child: const AddSubsSheet(),
                 ),
               ),
-              child: Text("home.add_sub".tr()),
+              child: Text('home.add_sub'.tr()),
             ),
           ],
         );
@@ -96,7 +96,6 @@ class HomeScreen extends HookConsumerWidget {
             const SizedBox(height: 16),
             // Compact Subscription List
             Flexible(
-              flex: 1,
               fit: FlexFit.tight,
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -156,14 +155,14 @@ class _SummaryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "home.total_spending".tr(),
+                    'home.total_spending'.tr(),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.white70,
                         ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "$currencySymbol${total.toStringAsFixed(2)}",
+                    '$currencySymbol${total.toStringAsFixed(2)}',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -178,7 +177,7 @@ class _SummaryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  "home.active_count".tr(args: [count.toString()]),
+                  'home.active_count'.tr(args: [count.toString()]),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -197,7 +196,7 @@ class _SummaryCard extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  "home.most_expensive".tr(),
+                  'home.most_expensive'.tr(),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.white70,
                       ),
@@ -231,37 +230,35 @@ class _CompactSubscriptionTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String frequencyShort = 'frequency.short.${slice.frequency.name.toLowerCase()}'.tr();
+    final frequencyShort = 'frequency.short.${slice.frequency.name.toLowerCase()}'.tr();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Dismissible(
         key: Key('${slice.name}-$index'),
         direction: DismissDirection.endToStart,
-        confirmDismiss: (direction) async {
-          return await showAdaptiveDialog<bool>(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog.adaptive(
-                title: Text(
-                  "home.delete_title".tr(),
-                  style: TextStyle(fontWeight: FontWeight.bold),
+        confirmDismiss: (direction) => showAdaptiveDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog.adaptive(
+              title: Text(
+                'home.delete_title'.tr(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Text('home.delete_confirm'.tr(args: [slice.name])),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('home.cancel'.tr()),
                 ),
-                content: Text("home.delete_confirm".tr(args: [slice.name])),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: Text("home.cancel".tr()),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: Text("home.delete".tr()),
-                  ),
-                ],
-              );
-            },
-          );
-        },
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text('home.delete'.tr()),
+                ),
+              ],
+            );
+          },
+        ),
         onDismissed: (direction) {
           ref.read(subsControllerProvider.notifier).removeAt(index);
         },
@@ -272,7 +269,7 @@ class _CompactSubscriptionTile extends ConsumerWidget {
             color: Theme.of(context).colorScheme.error,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
+          child: const Icon(
             Icons.delete_outline,
             color: Colors.white,
           ),
@@ -312,9 +309,9 @@ class _CompactSubscriptionTile extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        "home.renews_info".tr(args: [
-                          "${slice.startDate.month}/${slice.startDate.day}",
-                          "frequency.${slice.frequency.name.toLowerCase()}".tr()
+                        'home.renews_info'.tr(args: [
+                          '${slice.startDate.month}/${slice.startDate.day}',
+                          'frequency.${slice.frequency.name.toLowerCase()}'.tr()
                         ]),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -327,7 +324,7 @@ class _CompactSubscriptionTile extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  "$currencySymbol${slice.amount.toStringAsFixed(2)}$frequencyShort",
+                  '$currencySymbol${slice.amount.toStringAsFixed(2)}$frequencyShort',
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -357,5 +354,3 @@ class _CompactSliceLeading extends StatelessWidget {
     );
   }
 }
-
-

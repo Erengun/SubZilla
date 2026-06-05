@@ -5,11 +5,11 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:subs_tracker/models/sub_slice.dart';
-import 'package:subs_tracker/providers/settings_controller.dart';
-import 'package:subs_tracker/providers/subs_controller.dart';
-import 'package:subs_tracker/utils/color_palette.dart';
-import 'package:subs_tracker/widgets/brand_logo.dart';
+import '../models/sub_slice.dart';
+import '../providers/settings_controller.dart';
+import '../providers/subs_controller.dart';
+import '../utils/color_palette.dart';
+import '../widgets/brand_logo.dart';
 
 // ---------------------------------------------------------------------------
 // Helper functions
@@ -70,7 +70,7 @@ void _showFrequencyPicker(
   SubSlice draft,
   void Function(SubSlice) onUpdate,
 ) {
-  final frequencies = Frequency.values;
+  const frequencies = Frequency.values;
   final initialIndex = frequencies.indexOf(draft.frequency);
 
   showCupertinoModalPopup<void>(
@@ -176,7 +176,7 @@ void _showColorPicker(
           final theme = Theme.of(ctx);
 
           Future<void> openCustom() async {
-            Color temp = currentColor;
+            var temp = currentColor;
             final result = await showDialog<Color>(
               context: ctx,
               builder: (dialogCtx) => StatefulBuilder(
@@ -187,7 +187,6 @@ void _showColorPicker(
                       pickerColor: temp,
                       onColorChanged: (c) => setS(() => temp = c),
                       enableAlpha: false,
-                      paletteType: PaletteType.hsvWithHue,
                       labelTypes: const [],
                       pickerAreaBorderRadius: const BorderRadius.all(Radius.circular(12)),
                     ),
@@ -612,7 +611,6 @@ class _HeroSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: slice.brand == null ? onTapColor : null,
@@ -644,7 +642,6 @@ class _HeroSection extends StatelessWidget {
               children: [
                 if (slice.brand == null)
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: EditableText(
@@ -790,7 +787,6 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 4),
           if (controller != null && focusNode != null && onSave != null)
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Flexible(
                   child: EditableText(
@@ -922,7 +918,7 @@ class _DetailsSection extends StatelessWidget {
         ),
         ClipRRect(
           borderRadius: BorderRadius.circular(14),
-          child: Container(
+          child: DecoratedBox(
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainer,
             ),
@@ -1008,7 +1004,6 @@ class _ColorDetailRow extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                  width: 1,
                 ),
               ),
             ),
@@ -1074,7 +1069,7 @@ class _PaymentHistorySection extends StatelessWidget {
         if (history.isNotEmpty)
           ClipRRect(
             borderRadius: BorderRadius.circular(14),
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainer,
               ),

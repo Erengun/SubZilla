@@ -10,9 +10,10 @@ import 'package:riverpod_annotation/experimental/persist.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:riverpod_sqflite/riverpod_sqflite.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:subs_tracker/models/sub_slice.dart';
-import 'package:subs_tracker/utils/notification_service.dart';
 import 'package:timezone/timezone.dart' as tz;
+
+import '../models/sub_slice.dart';
+import '../utils/notification_service.dart';
 
 part 'subs_controller.g.dart';
 
@@ -22,14 +23,12 @@ int _clampDay(int year, int month, int day) {
   return day.clamp(1, lastDay);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<JsonSqFliteStorage> subsStorage(Ref ref) async {
-  JsonSqFliteStorage storage = await JsonSqFliteStorage.open(
+  final storage = await JsonSqFliteStorage.open(
     join(await getDatabasesPath(), 'subs.db'),
   );
-  ref
-    ..onDispose(storage.close)
-    ..keepAlive();
+  ref.onDispose(storage.close);
   return storage;
 }
 
@@ -40,9 +39,9 @@ class SubsController extends _$SubsController {
   FutureOr<List<SubSlice>> build() async {
     await persist(
       ref.watch(subsStorageProvider.future),
-      options: StorageOptions(
+      options: const StorageOptions(
         cacheTime: StorageCacheTime.unsafe_forever,
-        destroyKey: "v2",
+        destroyKey: 'v2',
       ),
     ).future;
     await scheduleNotification();
@@ -57,7 +56,7 @@ class SubsController extends _$SubsController {
   Future<void> scheduleNotification() async {
     await LocalNotificationService.instance.cancelAllNotifications();
     final subs = state.value ?? [];
-    for (int i = 0; i < subs.length; i++) {
+    for (var i = 0; i < subs.length; i++) {
       await scheduleRepeatingNotification(subs[i], i);
     }
   }
@@ -71,37 +70,33 @@ class SubsController extends _$SubsController {
 
     switch (slice.frequency) {
       case Frequency.daily:
-        nextDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 12, 0, 0);
+        nextDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 12);
         if (nextDate.isBefore(now)) {
           nextDate = nextDate.add(const Duration(days: 1));
         }
         repeatComponents = DateTimeComponents.time;
-        break;
       case Frequency.weekly:
-        nextDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 12, 0, 0);
+        nextDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 12);
         while (nextDate.weekday != slice.startDate.weekday || nextDate.isBefore(now)) {
           nextDate = nextDate.add(const Duration(days: 1));
         }
         repeatComponents = DateTimeComponents.dayOfWeekAndTime;
-        break;
       case Frequency.monthly:
         final curDay = _clampDay(now.year, now.month, slice.startDate.day);
-        nextDate = tz.TZDateTime(tz.local, now.year, now.month, curDay, 12, 0, 0);
+        nextDate = tz.TZDateTime(tz.local, now.year, now.month, curDay, 12);
         if (nextDate.isBefore(now)) {
           final nextMonth = now.month == 12 ? 1 : now.month + 1;
           final nextYear = now.month == 12 ? now.year + 1 : now.year;
           final nextDay = _clampDay(nextYear, nextMonth, slice.startDate.day);
-          nextDate = tz.TZDateTime(tz.local, nextYear, nextMonth, nextDay, 12, 0, 0);
+          nextDate = tz.TZDateTime(tz.local, nextYear, nextMonth, nextDay, 12);
         }
         repeatComponents = DateTimeComponents.dayOfMonthAndTime;
-        break;
       case Frequency.yearly:
-        nextDate = tz.TZDateTime(tz.local, now.year, slice.startDate.month, slice.startDate.day, 12, 0, 0);
+        nextDate = tz.TZDateTime(tz.local, now.year, slice.startDate.month, slice.startDate.day, 12);
         if (nextDate.isBefore(now)) {
-          nextDate = tz.TZDateTime(tz.local, now.year + 1, slice.startDate.month, slice.startDate.day, 12, 0, 0);
+          nextDate = tz.TZDateTime(tz.local, now.year + 1, slice.startDate.month, slice.startDate.day, 12);
         }
         repeatComponents = DateTimeComponents.dateAndTime;
-        break;
     }
 
     final idDue = index * 2;
@@ -110,8 +105,8 @@ class SubsController extends _$SubsController {
     // "Due today" — repeats at the correct cadence
     await LocalNotificationService.instance.scheduleNotification(
       id: idDue,
-      title: "Subscription Reminder",
-      body: "Your ${slice.name} subscription is due today.",
+      title: 'Subscription Reminder',
+      body: 'Your ${slice.name} subscription is due today.',
       scheduledDate: nextDate,
       matchDateTimeComponents: repeatComponents,
     );
@@ -120,8 +115,8 @@ class SubsController extends _$SubsController {
     if (slice.frequency != Frequency.daily) {
       await LocalNotificationService.instance.scheduleNotification(
         id: idDueTomorrow,
-        title: "Subscription Reminder",
-        body: "Your ${slice.name} subscription is due tomorrow.",
+        title: 'Subscription Reminder',
+        body: 'Your ${slice.name} subscription is due tomorrow.',
         scheduledDate: nextDate.subtract(const Duration(days: 1)),
         matchDateTimeComponents: repeatComponents,
       );
@@ -139,7 +134,7 @@ class SubsController extends _$SubsController {
   }
 
   void clear() {
-    state = AsyncValue.data([]);
+    state = const AsyncValue.data([]);
     scheduleNotification();
   }
 

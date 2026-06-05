@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:subs_tracker/models/brand.dart';
+import 'brand.dart';
 
 part 'sub_slice.freezed.dart';
 part 'sub_slice.g.dart';
@@ -23,6 +23,9 @@ abstract class SubSlice with _$SubSlice {
     String? category,
   }) = _SubSlice;
 
+  factory SubSlice.fromJson(Map<String, dynamic> json) =>
+      _$SubSliceFromJson(json);
+
   const SubSlice._();
 
   double get monthlyAmount {
@@ -37,7 +40,4 @@ abstract class SubSlice with _$SubSlice {
         return amount / 12;
     }
   }
-
-  factory SubSlice.fromJson(Map<String, dynamic> json) =>
-      _$SubSliceFromJson(json);
 }

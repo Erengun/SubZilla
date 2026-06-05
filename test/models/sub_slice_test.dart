@@ -31,7 +31,6 @@ void main() {
         amount: 10,
         color: 0,
         startDate: DateTime.now(),
-        frequency: Frequency.monthly,
       );
       expect(slice.monthlyAmount, 10);
     });
