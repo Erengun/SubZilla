@@ -20,6 +20,8 @@ class HomeScreen extends HookConsumerWidget {
     final settingsAsync = ref.watch(settingsControllerProvider);
 
     return Scaffold(
+      extendBody: true,
+      resizeToAvoidBottomInset: false,
       appBar: SubZillaAppBar(
         trailing: IconButton(
           icon: const Icon(Icons.add),
@@ -84,6 +86,7 @@ class HomeScreen extends HookConsumerWidget {
       final mostExpensive = sortedSlices.first;
 
       return SafeArea(
+        bottom: false,
         child: Column(
           children: [
             // Summary Card
@@ -98,7 +101,7 @@ class HomeScreen extends HookConsumerWidget {
             Flexible(
               fit: FlexFit.tight,
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: EdgeInsets.fromLTRB(12, 0, 12, MediaQuery.paddingOf(context).bottom),
                 itemCount: slices.length,
                 itemBuilder: (context, index) {
                   final slice = slices[index];

@@ -33,7 +33,9 @@
 		"renews_today_alert_subtitle": "{} abonelik bugün yenileniyor",
 		"renews_today_badge": "Bugün",
 		"sort_soonest": "En yakın",
-		"sort_default": "Varsayılan"
+		"sort_default": "Varsayılan",
+		"renewing_soon": "Yakında yenileniyor",
+		"tomorrow": "Yarın"
 	},
 	"frequency": {
 		"daily": "Günlük",
@@ -165,7 +167,10 @@
 		"percent_total": "toplamın %",
 		"period_month": "Ay",
 		"period_quarter": "3 Ay",
-		"period_year": "Yıl"
+		"period_year": "Yıl",
+		"chart_title": "Harcama Özeti",
+		"chart_mode_amount": "Tutar",
+		"chart_mode_share": "Pay"
 	},
 	"frequency_names": {
 		"daily": "GÜNLÜK",

@@ -68,12 +68,27 @@ class CalendarScreen extends HookConsumerWidget {
                   focusedDay.value = focused;
                 },
                 eventLoader: (day) => getEventsForDay(day, subs),
+                calendarBuilders: CalendarBuilders<SubSlice>(
+                  markerBuilder: (context, day, events) {
+                    if (events.isEmpty) return null;
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: events.take(4).map((sub) {
+                        return Container(
+                          width: 6,
+                          height: 6,
+                          margin: const EdgeInsets.symmetric(horizontal: 1),
+                          decoration: BoxDecoration(
+                            color: Color(sub.color),
+                            shape: BoxShape.circle,
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
                 calendarStyle: CalendarStyle(
                   cellMargin: const EdgeInsets.all(8),
-                  markerDecoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    shape: BoxShape.circle,
-                  ),
                   todayDecoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                     shape: BoxShape.circle,

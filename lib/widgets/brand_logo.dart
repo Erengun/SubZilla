@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/brand.dart';
 import '../utils/brand_utils.dart';
 

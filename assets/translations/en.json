@@ -33,7 +33,9 @@
 		"renews_today_alert_subtitle": "{} subscription(s) renew today",
 		"renews_today_badge": "Today",
 		"sort_soonest": "Soonest",
-		"sort_default": "Default"
+		"sort_default": "Default",
+		"renewing_soon": "Renewing soon",
+		"tomorrow": "Tomorrow"
 	},
 	"frequency": {
 		"daily": "Daily",
@@ -165,7 +167,10 @@
 		"percent_total": "% of total",
 		"period_month": "Month",
 		"period_quarter": "3 Months",
-		"period_year": "Year"
+		"period_year": "Year",
+		"chart_title": "Spend Overview",
+		"chart_mode_amount": "Amount",
+		"chart_mode_share": "Share"
 	},
 	"frequency_names": {
 		"daily": "DAILY",

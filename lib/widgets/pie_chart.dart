@@ -75,7 +75,6 @@ class _SubsPieState extends ConsumerState<SubsPie> {
             duration: const Duration(milliseconds: 100),
           ),
         ),
-        const SizedBox(height: 12),
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import '../config/router_config.dart';
 import '../widgets/glass_nav_bar.dart';
 import '../widgets/menu_bar.dart';
@@ -30,6 +31,8 @@ class RootLayout extends ConsumerWidget {
 
     return Scaffold(
       key: rootScaffoldKey,
+      extendBody: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: const SidebarMenu(),
       body: child,

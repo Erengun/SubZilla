@@ -2,14 +2,19 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import '../models/settings_view_model.dart';
 import '../models/sub_slice.dart';
 import '../providers/settings_controller.dart';
 import '../providers/subs_controller.dart';
+import '../utils/app_theme.dart';
+import '../widgets/bar_chart.dart';
 import '../widgets/pie_chart.dart';
 import '../widgets/sub_zilla_app_bar.dart';
 
 enum _Period { month, quarter, year }
+
+enum _ChartMode { price, percentage }
 
 extension _PeriodX on _Period {
   String get labelKey => switch (this) {
@@ -39,12 +44,13 @@ class AnalyticsScreen extends HookConsumerWidget {
     final slicesAsync = ref.watch(subsControllerProvider);
     final settingsAsync = ref.watch(settingsControllerProvider);
     final period = useState(_Period.month);
+    final chartMode = useState(_ChartMode.price);
 
     return Scaffold(
       appBar: const SubZillaAppBar(),
       body: slicesAsync.when(
         data: (slices) => settingsAsync.when(
-          data: (settings) => _buildBody(slices, settings, context, period),
+          data: (settings) => _buildBody(slices, settings, context, period, chartMode),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) =>
               Center(child: Text('common.error_generic'.tr())),
@@ -61,6 +67,7 @@ class AnalyticsScreen extends HookConsumerWidget {
     SettingsViewModel settings,
     BuildContext context,
     ValueNotifier<_Period> period,
+    ValueNotifier<_ChartMode> chartMode,
   ) {
     if (slices.isEmpty) {
       return Center(child: Text('analytics.no_data'.tr()));
@@ -73,8 +80,9 @@ class AnalyticsScreen extends HookConsumerWidget {
         sorted.fold<double>(0, (a, b) => a + b.monthlyAmount) * multiplier;
 
     return SafeArea(
+      bottom:false,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.paddingOf(context).bottom),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -109,7 +117,61 @@ class AnalyticsScreen extends HookConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(16),
-              child: const SubsPie(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'analytics.chart_title'.tr(),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                      if (chartMode.value == _ChartMode.price)
+                        Text(
+                          period.value.totalLabelKey.tr(),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: SegmentedButton<_ChartMode>(
+                      segments: [
+                        ButtonSegment(
+                          value: _ChartMode.price,
+                          label: Text('analytics.chart_mode_amount'.tr()),
+                        ),
+                        ButtonSegment(
+                          value: _ChartMode.percentage,
+                          label: Text('analytics.chart_mode_share'.tr()),
+                        ),
+                      ],
+                      selected: {chartMode.value},
+                      onSelectionChanged: (s) => chartMode.value = s.first,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    transitionBuilder: (child, animation) =>
+                        FadeTransition(opacity: animation, child: child),
+                    child: chartMode.value == _ChartMode.price
+                        ? SubsBar(
+                            key: const ValueKey(_ChartMode.price),
+                            multiplier: period.value.multiplier,
+                          )
+                        : const SubsPie(key: ValueKey(_ChartMode.percentage)),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 32),
             Text(
@@ -156,8 +218,6 @@ class _SummaryCard extends StatelessWidget {
   final String currency;
   final String totalLabel;
 
-  static const _coral = Color(0xFFD83434);
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -190,7 +250,7 @@ class _SummaryCard extends StatelessWidget {
                   '$currency${total.toStringAsFixed(2)}',
                   style: textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: _coral,
+                    color: kCoralAccent,
                   ),
                 ),
               ],
@@ -283,8 +343,8 @@ class _BreakdownItem extends StatelessWidget {
               child: Text(
                 '#$rank',
                 style: textTheme.bodySmall?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
+                  color: rank == 1 ? kCoralAccent : scheme.onSurfaceVariant,
+                  fontWeight: rank == 1 ? FontWeight.w700 : FontWeight.w500,
                 ),
                 textAlign: TextAlign.right,
               ),

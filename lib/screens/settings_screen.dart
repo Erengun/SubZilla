@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import '../models/settings_view_model.dart';
 import '../providers/settings_controller.dart';
 import '../utils/app_theme.dart';
@@ -32,8 +33,9 @@ class SettingsScreen extends HookConsumerWidget {
     WidgetRef ref,
   ) {
     return SafeArea(
+      bottom: false,
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.paddingOf(context).bottom),
         children: [
           Text(
             'settings.title',
