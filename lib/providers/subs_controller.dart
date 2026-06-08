@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     show DateTimeComponents;
+import 'package:in_app_review/in_app_review.dart';
 import 'package:path/path.dart';
 import 'package:riverpod_annotation/experimental/json_persist.dart';
 import 'package:riverpod_annotation/experimental/persist.dart';
@@ -51,6 +52,10 @@ class SubsController extends _$SubsController {
   void addSlice(SubSlice slice) {
     state = AsyncValue.data(List.of(state.value ?? [])..add(slice));
     scheduleNotification();
+    final count = state.value?.length ?? 0;
+    if (count > 0 && count % 3 == 0) {
+      InAppReview.instance.requestReview();
+    }
   }
 
   Future<void> scheduleNotification() async {
