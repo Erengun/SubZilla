@@ -53,8 +53,10 @@ class SubsController extends _$SubsController {
     state = AsyncValue.data(List.of(state.value ?? [])..add(slice));
     scheduleNotification();
     final count = state.value?.length ?? 0;
-    if (count > 0 && count % 3 == 0) {
-      InAppReview.instance.requestReview();
+    if (count % 3 == 0) {
+      InAppReview.instance.isAvailable().then((available) {
+        if (available) InAppReview.instance.requestReview();
+      });
     }
   }
 
