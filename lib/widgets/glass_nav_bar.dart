@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 import 'package:motor/motor.dart';
 
 const _snappyMotion = CupertinoMotion.snappy();

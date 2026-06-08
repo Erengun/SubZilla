@@ -1,5 +1,6 @@
-import 'dart:async';
+import 'dart:async' show StreamSubscription;
 import 'dart:io';
+
 import 'package:in_app_update/in_app_update.dart';
 
 class UpdateService {
@@ -20,10 +21,12 @@ class UpdateService {
         await InAppUpdate.performImmediateUpdate();
       } else {
         await InAppUpdate.startFlexibleUpdate();
+        await _flexSub?.cancel();
         _flexSub = InAppUpdate.installUpdateListener.listen((status) {
           if (status == InstallStatus.downloaded) {
             _flexSub?.cancel();
-            InAppUpdate.completeFlexibleUpdate();
+            _flexSub = null;
+            InAppUpdate.completeFlexibleUpdate().catchError((_) {});
           }
         });
       }
