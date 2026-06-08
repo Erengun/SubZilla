@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -7,6 +9,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:riverpod_sqflite/riverpod_sqflite.dart';
 import 'package:sqflite/sqflite.dart';
 import '../models/settings_view_model.dart';
+import '../services/widget_update_service.dart';
+import 'subs_controller.dart';
 
 part 'settings_controller.g.dart';
 
@@ -49,6 +53,8 @@ class SettingsController extends _$SettingsController {
 
   void updateCurrency(Currency currency) {
     state = AsyncData(state.value!.copyWith(currency: currency));
+    final subs = ref.read(subsControllerProvider).value ?? [];
+    unawaited(WidgetUpdateService.instance.update(subs, currency.symbol));
   }
 
   void updateUserName(String? userName) {

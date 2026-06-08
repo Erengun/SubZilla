@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -14,7 +15,9 @@ import 'package:sqflite/sqflite.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../models/sub_slice.dart';
+import '../services/widget_update_service.dart';
 import '../utils/notification_service.dart';
+import 'settings_controller.dart';
 
 part 'subs_controller.g.dart';
 
@@ -46,12 +49,16 @@ class SubsController extends _$SubsController {
       ),
     ).future;
     await scheduleNotification();
+    final currency = ref.read(settingsControllerProvider).value?.currency.symbol ?? '';
+    unawaited(WidgetUpdateService.instance.update(state.value ?? [], currency));
     return state.value ?? [];
   }
 
   void addSlice(SubSlice slice) {
     state = AsyncValue.data(List.of(state.value ?? [])..add(slice));
     scheduleNotification();
+    final currency = ref.read(settingsControllerProvider).value?.currency.symbol ?? '';
+    unawaited(WidgetUpdateService.instance.update(state.value ?? [], currency));
     final count = state.value?.length ?? 0;
     if (count % 3 == 0) {
       InAppReview.instance.isAvailable().then((available) {
@@ -133,11 +140,15 @@ class SubsController extends _$SubsController {
   void removeAt(int index) {
     state = AsyncValue.data(List.of(state.value ?? [])..removeAt(index));
     scheduleNotification();
+    final currency = ref.read(settingsControllerProvider).value?.currency.symbol ?? '';
+    unawaited(WidgetUpdateService.instance.update(state.value ?? [], currency));
   }
 
   void updateAt(int index, SubSlice updated) {
     state = AsyncValue.data(List.of(state.value ?? [])..[index] = updated);
     scheduleNotification();
+    final currency = ref.read(settingsControllerProvider).value?.currency.symbol ?? '';
+    unawaited(WidgetUpdateService.instance.update(state.value ?? [], currency));
   }
 
   void clear() {

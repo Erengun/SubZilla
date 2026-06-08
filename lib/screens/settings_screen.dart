@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../models/settings_view_model.dart';
 import '../providers/settings_controller.dart';
+import '../services/live_activity_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/color_scheme_picker.dart';
 import '../widgets/sub_zilla_app_bar.dart';
@@ -109,7 +110,10 @@ class SettingsScreen extends HookConsumerWidget {
           if (kDebugMode)
             _SettingsSection(
               title: 'Developer',
-              children: [_ResetOnboardingTile(ref: ref)],
+              children: [
+                _ResetOnboardingTile(ref: ref),
+                _TestLiveActivityTile(),
+              ],
             ),
         ],
       ),
@@ -501,6 +505,27 @@ class LanguageOption extends StatelessWidget {
             )
           : const Icon(Icons.radio_button_unchecked),
       onTap: onTap,
+    );
+  }
+}
+
+class _TestLiveActivityTile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: const Text('Test Live Activity'),
+      subtitle: const Text('Force-starts with dummy Netflix sub'),
+      leading: const Icon(Icons.live_tv),
+      onTap: () async {
+        const subsJson =
+            r'[{"name":"Netflix","amount":15.99,"currency":"$","color":4294901760}]';
+        await LiveActivityService.instance.startRaw(subsJson);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Live Activity started — lock the screen to see it')),
+          );
+        }
+      },
     );
   }
 }

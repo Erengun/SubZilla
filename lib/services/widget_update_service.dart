@@ -1,0 +1,47 @@
+import 'dart:convert';
+
+import 'package:home_widget/home_widget.dart';
+
+import '../models/sub_slice.dart';
+
+class WidgetUpdateService {
+  WidgetUpdateService._();
+
+  static final instance = WidgetUpdateService._();
+
+  static Map<String, dynamic> buildWidgetData(
+    List<SubSlice> subs,
+    String currency,
+  ) {
+    final subsJson = subs
+        .map((s) => {
+              'name': s.name,
+              'amount': s.amount,
+              'monthlyAmount': s.monthlyAmount,
+              'startDate': s.startDate.toIso8601String(),
+              'frequency': s.frequency.name,
+              'color': s.color,
+            })
+        .toList();
+
+    final monthlyTotal = subs.fold<double>(0, (sum, s) => sum + s.monthlyAmount);
+
+    return {
+      'subs': subsJson,
+      'currency': currency,
+      'monthlyTotal': monthlyTotal,
+    };
+  }
+
+  Future<void> update(List<SubSlice> subs, String currencySymbol) async {
+    try {
+      final data = buildWidgetData(subs, currencySymbol);
+      await HomeWidget.saveWidgetData('subs_data', jsonEncode(data));
+      await HomeWidget.updateWidget(iOSName: 'MonthlySpendWidget', androidName: 'SubsWidget');
+      await HomeWidget.updateWidget(iOSName: 'NextDueWidget', androidName: 'SubsWidget');
+      await HomeWidget.updateWidget(iOSName: 'UpcomingWidget', androidName: 'SubsWidget');
+    } catch (_) {
+      // Widgets are non-critical — silently ignore errors.
+    }
+  }
+}

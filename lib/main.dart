@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:home_widget/home_widget.dart';
 
 import 'config/router_config.dart';
 import 'providers/settings_controller.dart';
@@ -11,6 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await LocalNotificationService.instance.init();
+  await HomeWidget.setAppGroupId('group.io.devopen.subzilla');
 
   runApp(
     ProviderScope(
