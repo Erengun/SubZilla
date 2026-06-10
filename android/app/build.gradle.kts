@@ -4,6 +4,7 @@ import java.io.FileInputStream
 plugins {
     id("com.android.application")
     id("dev.flutter.flutter-gradle-plugin")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.20"
 }
 
 val keystoreProperties = Properties()
@@ -17,6 +18,10 @@ android {
     kotlin { jvmToolchain(17) }
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
+
+    buildFeatures {
+        compose = true
+    }
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

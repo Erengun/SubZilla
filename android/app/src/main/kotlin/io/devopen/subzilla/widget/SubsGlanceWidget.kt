@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.*
 import androidx.glance.action.actionStartActivity
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.*
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.layout.*
@@ -25,34 +26,93 @@ private fun Long.toGlanceColor(): Color {
     return Color(r, g, b, a)
 }
 
+private fun urgencyColorProvider(days: Long): ColorProvider = when {
+    days == 0L -> ColorProvider(Color(0xFFE53935))
+    days <= 3L -> ColorProvider(Color(0xFFF57C00))
+    else -> ColorProvider(Color(0xFF9E9E9E))
+}
+
 // ── Shared composables ────────────────────────────────────────────────────────
 
 @Composable
 private fun EmptyState(message: String) {
     Box(contentAlignment = Alignment.Center, modifier = GlanceModifier.fillMaxSize()) {
-        Text(message, style = TextStyle(fontSize = 12.sp, color = ColorProvider(Color.Gray)))
+        Text(message, style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface))
     }
 }
 
 @Composable
-private fun SubRow(sub: WidgetSub, currency: String) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = GlanceModifier.fillMaxWidth()) {
+private fun Divider() {
+    Box(
+        modifier = GlanceModifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(GlanceTheme.colors.surfaceVariant)
+    ) {}
+}
+
+@Composable
+private fun DaysBadge(days: Long) {
+    val chipBg: Color? = when {
+        days == 0L -> Color(0xFFE53935)
+        days <= 3L -> Color(0xFFF57C00)
+        else -> null
+    }
+    val label = if (days == 0L) "Today" else "in ${days}d"
+    if (chipBg != null) {
         Box(
             modifier = GlanceModifier
-                .size(8.dp)
-                .cornerRadius(4.dp)
+                .background(ColorProvider(chipBg))
+                .cornerRadius(6.dp)
+                .padding(horizontal = 8.dp, vertical = 3.dp)
+        ) {
+            Text(
+                label,
+                style = TextStyle(
+                    fontSize = 11.sp,
+                    color = ColorProvider(Color.White),
+                    fontWeight = FontWeight.Medium
+                )
+            )
+        }
+    } else {
+        Text(
+            label,
+            style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant)
+        )
+    }
+}
+
+@Composable
+private fun UpcomingSubRow(sub: WidgetSub, dueDate: LocalDate, today: LocalDate, currency: String) {
+    val days = NextDueDateHelper.daysUntil(dueDate, today)
+    val daysLabel = if (days == 0L) "Today" else "${days}d"
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = GlanceModifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = GlanceModifier
+                .size(14.dp)
+                .cornerRadius(7.dp)
                 .background(ColorProvider(sub.color.toGlanceColor()))
         ) {}
-        Spacer(modifier = GlanceModifier.width(6.dp))
+        Spacer(modifier = GlanceModifier.width(10.dp))
         Text(
             sub.name,
-            style = TextStyle(fontSize = 12.sp),
+            style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onBackground),
             modifier = GlanceModifier.defaultWeight(),
             maxLines = 1
         )
+        Spacer(modifier = GlanceModifier.width(8.dp))
+        Text(
+            daysLabel,
+            style = TextStyle(fontSize = 10.sp, color = urgencyColorProvider(days))
+        )
+        Spacer(modifier = GlanceModifier.width(10.dp))
         Text(
             "$currency${String.format("%.2f", sub.amount)}",
-            style = TextStyle(fontSize = 12.sp, color = ColorProvider(Color.Gray))
+            style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.primary)
         )
     }
 }
@@ -62,11 +122,7 @@ private fun SubRow(sub: WidgetSub, currency: String) {
 class MonthlySpendWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val data = SubsDataReader.read(context)
-        provideContent {
-            GlanceTheme {
-                MonthlySpendContent(data)
-            }
-        }
+        provideContent { GlanceTheme { MonthlySpendContent(data) } }
     }
 }
 
@@ -75,7 +131,7 @@ private fun MonthlySpendContent(data: WidgetData?) {
     val modifier = GlanceModifier
         .fillMaxSize()
         .background(GlanceTheme.colors.background)
-        .padding(12.dp)
+        .padding(16.dp)
         .clickable(actionStartActivity<MainActivity>())
 
     if (data == null || data.subs.isEmpty()) {
@@ -85,16 +141,24 @@ private fun MonthlySpendContent(data: WidgetData?) {
         return
     }
 
-    Column(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Text("This Month", style = TextStyle(fontSize = 11.sp, color = ColorProvider(Color.Gray)))
-        Spacer(modifier = GlanceModifier.height(4.dp))
+    Column(modifier = modifier, verticalAlignment = Alignment.Top) {
+        Text(
+            "THIS MONTH",
+            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+        )
+        Spacer(modifier = GlanceModifier.defaultWeight())
         Text(
             "${data.currency}${String.format("%.2f", data.monthlyTotal)}",
-            style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            style = TextStyle(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = GlanceTheme.colors.primary
+            )
         )
+        Spacer(modifier = GlanceModifier.defaultWeight())
         Text(
-            "${data.subs.size} subscriptions",
-            style = TextStyle(fontSize = 11.sp, color = ColorProvider(Color.Gray))
+            "${data.subs.size} subscription${if (data.subs.size == 1) "" else "s"}",
+            style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant)
         )
     }
 }
@@ -117,11 +181,7 @@ class NextDueWidget : GlanceAppWidget() {
                 }
             }
             ?.sortedBy { it.second }
-        provideContent {
-            GlanceTheme {
-                NextDueContent(data, sorted)
-            }
-        }
+        provideContent { GlanceTheme { NextDueContent(data, sorted) } }
     }
 }
 
@@ -130,7 +190,7 @@ private fun NextDueContent(data: WidgetData?, sorted: List<Triple<WidgetSub, Loc
     val modifier = GlanceModifier
         .fillMaxSize()
         .background(GlanceTheme.colors.background)
-        .padding(12.dp)
+        .padding(16.dp)
         .clickable(actionStartActivity<MainActivity>())
 
     if (sorted.isNullOrEmpty()) {
@@ -142,21 +202,39 @@ private fun NextDueContent(data: WidgetData?, sorted: List<Triple<WidgetSub, Loc
 
     val (first, _, days) = sorted[0]
     Column(modifier = modifier) {
-        Text("Next Due", style = TextStyle(fontSize = 11.sp, color = ColorProvider(Color.Gray)))
+        // Label row with left color stripe
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = GlanceModifier
+                    .width(3.dp)
+                    .height(13.dp)
+                    .cornerRadius(2.dp)
+                    .background(ColorProvider(first.color.toGlanceColor()))
+            ) {}
+            Spacer(modifier = GlanceModifier.width(7.dp))
+            Text(
+                "NEXT DUE",
+                style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+            )
+        }
+        Spacer(modifier = GlanceModifier.defaultWeight())
+        // Subscription name — hero element
+        Text(
+            first.name,
+            style = TextStyle(
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = GlanceTheme.colors.onBackground
+            ),
+            maxLines = 1
+        )
         Spacer(modifier = GlanceModifier.height(4.dp))
-        Text(first.name, style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold), maxLines = 1)
         Text(
             "${data!!.currency}${String.format("%.2f", first.amount)}",
-            style = TextStyle(fontSize = 13.sp, color = ColorProvider(Color.Gray))
+            style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.primary)
         )
-        Spacer(modifier = GlanceModifier.height(2.dp))
-        Text(
-            if (days == 0L) "Due today" else "in ${days}d",
-            style = TextStyle(
-                fontSize = 11.sp,
-                color = ColorProvider(if (days == 0L) Color.Red else Color.Gray)
-            )
-        )
+        Spacer(modifier = GlanceModifier.defaultWeight())
+        DaysBadge(days)
     }
 }
 
@@ -177,11 +255,7 @@ class UpcomingWidget : GlanceAppWidget() {
                 }
             }
             ?.sortedBy { it.second }
-        provideContent {
-            GlanceTheme {
-                UpcomingContent(data, sorted)
-            }
-        }
+        provideContent { GlanceTheme { UpcomingContent(data, sorted) } }
     }
 }
 
@@ -190,7 +264,7 @@ private fun UpcomingContent(data: WidgetData?, sorted: List<Pair<WidgetSub, Loca
     val modifier = GlanceModifier
         .fillMaxSize()
         .background(GlanceTheme.colors.background)
-        .padding(12.dp)
+        .padding(16.dp)
         .clickable(actionStartActivity<MainActivity>())
 
     if (sorted.isNullOrEmpty()) {
@@ -200,21 +274,36 @@ private fun UpcomingContent(data: WidgetData?, sorted: List<Pair<WidgetSub, Loca
         return
     }
 
+    val today = LocalDate.now()
     Column(modifier = modifier, verticalAlignment = Alignment.Top) {
-        Text(
-            "Upcoming",
-            style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Bold, color = ColorProvider(Color.Gray))
-        )
-        Spacer(modifier = GlanceModifier.height(6.dp))
-        sorted.take(6).forEach { (sub, _) ->
-            SubRow(sub = sub, currency = data!!.currency)
-            Spacer(modifier = GlanceModifier.height(4.dp))
+        // Header: title left, monthly total right
+        Row(
+            modifier = GlanceModifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "UPCOMING",
+                style = TextStyle(
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = GlanceTheme.colors.onSurfaceVariant
+                )
+            )
+            Spacer(modifier = GlanceModifier.defaultWeight())
+            Text(
+                "${data!!.currency}${String.format("%.2f", data.monthlyTotal)} / mo",
+                style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.primary)
+            )
         }
-        Spacer(modifier = GlanceModifier.defaultWeight())
-        Text(
-            "${data!!.currency}${String.format("%.2f", data.monthlyTotal)} / mo",
-            style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Bold)
-        )
+        Spacer(modifier = GlanceModifier.height(10.dp))
+        Divider()
+        Spacer(modifier = GlanceModifier.height(10.dp))
+        sorted.take(5).forEachIndexed { index, (sub, dueDate) ->
+            UpcomingSubRow(sub = sub, dueDate = dueDate, today = today, currency = data!!.currency)
+            if (index < minOf(sorted.size, 5) - 1) {
+                Spacer(modifier = GlanceModifier.height(8.dp))
+            }
+        }
     }
 }
 

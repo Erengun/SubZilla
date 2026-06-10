@@ -20,8 +20,8 @@ data class WidgetData(
 
 object SubsDataReader {
     fun read(context: Context): WidgetData? {
-        val prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
-        val json = prefs.getString("flutter_subs_data", null) ?: return null
+        val prefs = context.getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
+        val json = prefs.getString("subs_data", null) ?: return null
         return try {
             val obj = JSONObject(json)
             val subsArray = obj.getJSONArray("subs")
