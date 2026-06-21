@@ -1,7 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
+
 import '../config/router_config.dart';
 import '../models/settings_view_model.dart';
 import '../models/sub_slice.dart';
@@ -18,6 +21,8 @@ class HomeScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final slicesAsync = ref.watch(subsControllerProvider);
     final settingsAsync = ref.watch(settingsControllerProvider);
+
+    final showYearly = useState(false);
 
     return Scaffold(
       extendBody: true,
@@ -39,7 +44,7 @@ class HomeScreen extends HookConsumerWidget {
       ),
       body: slicesAsync.when(
         data: (slices) => settingsAsync.when(
-          data: (settings) => buildBody(slices, settings, context, ref),
+          data: (settings) => buildBody(slices, settings, context, ref, showYearly: showYearly.value, onToggleYearly: () => showYearly.value = !showYearly.value),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(child: Text('Error: $err')),
         ),
@@ -53,8 +58,10 @@ class HomeScreen extends HookConsumerWidget {
     List<SubSlice> slices,
     SettingsViewModel settings,
     BuildContext context,
-    WidgetRef ref,
-  ) {
+    WidgetRef ref, {
+    required bool showYearly,
+    required VoidCallback onToggleYearly,
+  }) {
       if (slices.isEmpty) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -91,24 +98,44 @@ class HomeScreen extends HookConsumerWidget {
           children: [
             // Summary Card
             _SummaryCard(
-              total: total,
+              total: showYearly ? total * 12 : total,
               count: slices.length,
               mostExpensive: mostExpensive,
               currencySymbol: settings.currency.symbol,
+              showYearly: showYearly,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
+            // Toolbar: sort + monthly/yearly toggle
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  const _SortButton(),
+                  const Spacer(),
+                  _LiquidGlassSegmentedControl(
+                    showYearly: showYearly,
+                    onToggle: onToggleYearly,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
             // Compact Subscription List
             Flexible(
               fit: FlexFit.tight,
-              child: ListView.builder(
-                padding: EdgeInsets.fromLTRB(12, 0, 12, MediaQuery.paddingOf(context).bottom),
+              child: ReorderableListView.builder(
+                padding: EdgeInsets.fromLTRB(12, 0, 12, MediaQuery.paddingOf(context).bottom + 80),
+                onReorder: (oldIndex, newIndex) =>
+                    ref.read(subsControllerProvider.notifier).reorderSlices(oldIndex, newIndex),
                 itemCount: slices.length,
                 itemBuilder: (context, index) {
                   final slice = slices[index];
                   return _CompactSubscriptionTile(
+                    key: ValueKey('${slice.name}-$index'),
                     slice: slice,
                     index: index,
                     currencySymbol: settings.currency.symbol,
+                    showYearly: showYearly,
                   );
                 },
               ),
@@ -125,12 +152,14 @@ class _SummaryCard extends StatelessWidget {
     required this.count,
     required this.mostExpensive,
     required this.currencySymbol,
+    required this.showYearly,
   });
 
   final double total;
   final int count;
   final SubSlice mostExpensive;
   final String currencySymbol;
+  final bool showYearly;
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +187,7 @@ class _SummaryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'home.total_spending'.tr(),
+                    showYearly ? 'home.total_spending_yearly'.tr() : 'home.total_spending'.tr(),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.white70,
                         ),
@@ -222,62 +251,30 @@ class _SummaryCard extends StatelessWidget {
 
 class _CompactSubscriptionTile extends ConsumerWidget {
   const _CompactSubscriptionTile({
+    super.key,
     required this.slice,
     required this.index,
     required this.currencySymbol,
+    required this.showYearly,
   });
 
   final SubSlice slice;
   final int index;
   final String currencySymbol;
+  final bool showYearly;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final frequencyShort = 'frequency.short.${slice.frequency.name.toLowerCase()}'.tr();
+    final displayAmount = showYearly
+        ? slice.monthlyAmount * 12
+        : slice.monthlyAmount;
+    final displaySuffix = showYearly
+        ? 'frequency.short.yearly'.tr()
+        : 'frequency.short.monthly'.tr();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Dismissible(
-        key: Key('${slice.name}-$index'),
-        direction: DismissDirection.endToStart,
-        confirmDismiss: (direction) => showAdaptiveDialog<bool>(
-          context: context,
-          builder: (context) {
-            return AlertDialog.adaptive(
-              title: Text(
-                'home.delete_title'.tr(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: Text('home.delete_confirm'.tr(args: [slice.name])),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: Text('home.cancel'.tr()),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: Text('home.delete'.tr()),
-                ),
-              ],
-            );
-          },
-        ),
-        onDismissed: (direction) {
-          ref.read(subsControllerProvider.notifier).removeAt(index);
-        },
-        background: Container(
-          alignment: Alignment.centerRight,
-          padding: const EdgeInsets.only(right: 16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.error,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Icon(
-            Icons.delete_outline,
-            color: Colors.white,
-          ),
-        ),
-        child: GestureDetector(
+      child: GestureDetector(
           onTap: () {
             context.push(
               Routes.subscription.route,
@@ -327,7 +324,7 @@ class _CompactSubscriptionTile extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '$currencySymbol${slice.amount.toStringAsFixed(2)}$frequencyShort',
+                  '$currencySymbol${displayAmount.toStringAsFixed(2)}$displaySuffix',
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -336,6 +333,186 @@ class _CompactSubscriptionTile extends ConsumerWidget {
               ],
             ),
           ),
+        ),
+    );
+  }
+}
+
+class _SortButton extends ConsumerWidget {
+  const _SortButton();
+
+  static const _glassSettings = LiquidGlassSettings(
+    thickness: 18,
+    lightIntensity: 0.45,
+    refractiveIndex: 1.15,
+  );
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _showSheet(context, ref),
+      child: LiquidGlass.withOwnLayer(
+        shape: const LiquidRoundedSuperellipse(borderRadius: 20),
+        settings: _glassSettings,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.sort, size: 16, color: Theme.of(context).colorScheme.onSurface),
+              const SizedBox(width: 6),
+              Text(
+                'home.sort'.tr(),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSheet(BuildContext context, WidgetRef ref) {
+    final notifier = ref.read(subsControllerProvider.notifier);
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'home.sort_title'.tr(),
+                style: Theme.of(ctx).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.sort_by_alpha),
+              title: Text('home.sort_name_asc'.tr()),
+              onTap: () {
+                notifier.sortSlices((a, b) => a.name.compareTo(b.name));
+                Navigator.pop(ctx);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.sort_by_alpha),
+              title: Text('home.sort_name_desc'.tr()),
+              onTap: () {
+                notifier.sortSlices((a, b) => b.name.compareTo(a.name));
+                Navigator.pop(ctx);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.arrow_upward),
+              title: Text('home.sort_amount_asc'.tr()),
+              onTap: () {
+                notifier.sortSlices((a, b) => a.amount.compareTo(b.amount));
+                Navigator.pop(ctx);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.arrow_downward),
+              title: Text('home.sort_amount_desc'.tr()),
+              onTap: () {
+                notifier.sortSlices((a, b) => b.amount.compareTo(a.amount));
+                Navigator.pop(ctx);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LiquidGlassSegmentedControl extends StatelessWidget {
+  const _LiquidGlassSegmentedControl({
+    required this.showYearly,
+    required this.onToggle,
+  });
+
+  final bool showYearly;
+  final VoidCallback onToggle;
+
+  static const _bgSettings = LiquidGlassSettings(
+    blur: 3,
+    thickness: 12,
+    lightIntensity: 0.25,
+    refractiveIndex: 1.08,
+  );
+
+  static const _thumbSettings = LiquidGlassSettings(
+    blur: 6,
+    refractiveIndex: 1.15,
+  );
+
+  Widget _labelsRow(BuildContext context) {
+    final theme = Theme.of(context);
+    Widget seg(String key, bool active) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            key.tr(),
+            style: theme.textTheme.labelSmall?.copyWith(
+              fontWeight: active ? FontWeight.w600 : FontWeight.normal,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        );
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        seg('home.view_monthly', !showYearly),
+        seg('home.view_yearly', showYearly),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onToggle,
+      child: SizedBox(
+        height: 34,
+        child: Stack(
+          children: [
+            // Drives Stack width
+            Opacity(opacity: 0, child: _labelsRow(context)),
+            // Background glass
+            const Positioned.fill(
+              child: LiquidGlass.withOwnLayer(
+                shape: LiquidRoundedSuperellipse(borderRadius: 17),
+                settings: _bgSettings,
+                child: SizedBox.expand(),
+              ),
+            ),
+            // Animated sliding thumb
+            Positioned.fill(
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOutCubic,
+                alignment: showYearly ? Alignment.centerRight : Alignment.centerLeft,
+                child: const FractionallySizedBox(
+                  widthFactor: 0.5,
+                  child: Padding(
+                    padding: EdgeInsets.all(2),
+                    child: LiquidGlass.withOwnLayer(
+                      shape: LiquidRoundedSuperellipse(borderRadius: 14),
+                      settings: _thumbSettings,
+                      child: SizedBox.expand(),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Visible labels on top
+            _labelsRow(context),
+          ],
         ),
       ),
     );

@@ -76,6 +76,7 @@ class SubsController extends _$SubsController {
   }
 
   Future<void> scheduleRepeatingNotification(SubSlice slice, int index) async {
+    if (slice.reminderMode == ReminderMode.none) return;
     final now = tz.TZDateTime.now(tz.local);
 
     // Compute the next due date for this subscription
@@ -117,16 +118,19 @@ class SubsController extends _$SubsController {
     final idDueTomorrow = index * 2 + 1;
 
     // "Due today" — repeats at the correct cadence
-    await LocalNotificationService.instance.scheduleNotification(
-      id: idDue,
-      title: 'Subscription Reminder',
-      body: 'Your ${slice.name} subscription is due today.',
-      scheduledDate: nextDate,
-      matchDateTimeComponents: repeatComponents,
-    );
+    if (slice.reminderMode == ReminderMode.onDay || slice.reminderMode == ReminderMode.both) {
+      await LocalNotificationService.instance.scheduleNotification(
+        id: idDue,
+        title: 'Subscription Reminder',
+        body: 'Your ${slice.name} subscription is due today.',
+        scheduledDate: nextDate,
+        matchDateTimeComponents: repeatComponents,
+      );
+    }
 
     // "Due tomorrow" — skip for daily (every day is "tomorrow")
-    if (slice.frequency != Frequency.daily) {
+    if (slice.frequency != Frequency.daily &&
+        (slice.reminderMode == ReminderMode.dayBefore || slice.reminderMode == ReminderMode.both)) {
       await LocalNotificationService.instance.scheduleNotification(
         id: idDueTomorrow,
         title: 'Subscription Reminder',
@@ -146,6 +150,25 @@ class SubsController extends _$SubsController {
 
   void updateAt(int index, SubSlice updated) {
     state = AsyncValue.data(List.of(state.value ?? [])..[index] = updated);
+    scheduleNotification();
+    final currency = ref.read(settingsControllerProvider).value?.currency.symbol ?? '';
+    unawaited(WidgetUpdateService.instance.update(state.value ?? [], currency));
+  }
+
+  void reorderSlices(int oldIndex, int newIndex) {
+    final list = List<SubSlice>.from(state.value ?? []);
+    final insertIndex = newIndex > oldIndex ? newIndex - 1 : newIndex;
+    final item = list.removeAt(oldIndex);
+    list.insert(insertIndex, item);
+    state = AsyncValue.data(list);
+    scheduleNotification();
+    final currency = ref.read(settingsControllerProvider).value?.currency.symbol ?? '';
+    unawaited(WidgetUpdateService.instance.update(state.value ?? [], currency));
+  }
+
+  void sortSlices(int Function(SubSlice, SubSlice) compare) {
+    final list = List<SubSlice>.from(state.value ?? [])..sort(compare);
+    state = AsyncValue.data(list);
     scheduleNotification();
     final currency = ref.read(settingsControllerProvider).value?.currency.symbol ?? '';
     unawaited(WidgetUpdateService.instance.update(state.value ?? [], currency));

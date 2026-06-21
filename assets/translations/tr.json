@@ -16,7 +16,10 @@
 		"select_language": "Dil Seç",
 		"about": "Hakkında",
 		"version": "Sürüm",
-		"app_name": "SubZilla"
+		"app_name": "SubZilla",
+		"notifications_title": "Bildirimler",
+		"notify_due_today": "Bugün vadesi dolan hatırlatıcılar",
+		"notify_due_tomorrow": "Yarın vadesi dolan hatırlatıcılar"
 	},
 	"home": {
 		"no_subs": "Henüz Abonelik Eklenmedi.",
@@ -35,7 +38,16 @@
 		"sort_soonest": "En yakın",
 		"sort_default": "Varsayılan",
 		"renewing_soon": "Yakında yenileniyor",
-		"tomorrow": "Yarın"
+		"tomorrow": "Yarın",
+		"sort": "Sırala",
+		"sort_title": "Abonelikleri Sırala",
+		"sort_name_asc": "İsim A → Z",
+		"sort_name_desc": "İsim Z → A",
+		"sort_amount_asc": "Tutar (düşükten yükseğe)",
+		"sort_amount_desc": "Tutar (yüksekten düşüğe)",
+		"total_spending_yearly": "Toplam Yıllık Harcama",
+		"view_monthly": "Aylık",
+		"view_yearly": "Yıllık"
 	},
 	"frequency": {
 		"daily": "Günlük",
@@ -91,7 +103,8 @@
 		"next": "İleri",
 		"finish": "Bitir",
 		"error_generic": "Bir şeyler ters gitti",
-		"second_page": "İkinci Sayfa"
+		"second_page": "İkinci Sayfa",
+		"save": "Kaydet"
 	},
 	"dialogs": {
 		"add_title": "Abonelik Ekle",
@@ -196,10 +209,15 @@
 		"color": "Renk",
 		"custom_color": "Özel",
 		"reminder": "Hatırlatıcı",
+		"reminder_none": "Kapalı",
+		"reminder_onDay": "Gün içinde",
+		"reminder_dayBefore": "Bir gün önce",
+		"reminder_both": "Tümü",
 		"not_set": "—",
 		"delete": "Aboneliği Sil",
 		"delete_confirm": "{} aboneliğini silmek istediğinizden emin misiniz?",
 		"delete_action": "Sil",
-		"cancel": "İptal"
+		"cancel": "İptal",
+		"card_hint": "Son 4 hane"
 	}
 }

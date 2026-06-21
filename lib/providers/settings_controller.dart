@@ -68,4 +68,5 @@ class SettingsController extends _$SettingsController {
   void updateIsFirstTime({required bool isFirstTime}) {
     state = AsyncData(state.value!.copyWith(isFirstTime: isFirstTime));
   }
+
 }

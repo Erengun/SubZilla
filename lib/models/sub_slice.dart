@@ -11,6 +11,8 @@ enum Frequency {
   yearly,
 }
 
+enum ReminderMode { none, onDay, dayBefore, both }
+
 @freezed
 abstract class SubSlice with _$SubSlice {
   const factory SubSlice({
@@ -21,6 +23,8 @@ abstract class SubSlice with _$SubSlice {
     required DateTime startDate,
     @Default(Frequency.monthly) Frequency frequency,
     String? category,
+    @Default(ReminderMode.both) ReminderMode reminderMode,
+    String? cardLastFour,
   }) = _SubSlice;
 
   factory SubSlice.fromJson(Map<String, dynamic> json) =>

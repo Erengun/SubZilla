@@ -18,6 +18,10 @@ _SubSlice _$SubSliceFromJson(Map<String, dynamic> json) => _SubSlice(
       $enumDecodeNullable(_$FrequencyEnumMap, json['frequency']) ??
       Frequency.monthly,
   category: json['category'] as String?,
+  reminderMode:
+      $enumDecodeNullable(_$ReminderModeEnumMap, json['reminderMode']) ??
+      ReminderMode.both,
+  cardLastFour: json['cardLastFour'] as String?,
 );
 
 Map<String, dynamic> _$SubSliceToJson(_SubSlice instance) => <String, dynamic>{
@@ -28,6 +32,8 @@ Map<String, dynamic> _$SubSliceToJson(_SubSlice instance) => <String, dynamic>{
   'startDate': instance.startDate.toIso8601String(),
   'frequency': _$FrequencyEnumMap[instance.frequency]!,
   'category': instance.category,
+  'reminderMode': _$ReminderModeEnumMap[instance.reminderMode]!,
+  'cardLastFour': instance.cardLastFour,
 };
 
 const _$FrequencyEnumMap = {
@@ -35,4 +41,11 @@ const _$FrequencyEnumMap = {
   Frequency.weekly: 'weekly',
   Frequency.monthly: 'monthly',
   Frequency.yearly: 'yearly',
+};
+
+const _$ReminderModeEnumMap = {
+  ReminderMode.none: 'none',
+  ReminderMode.onDay: 'onDay',
+  ReminderMode.dayBefore: 'dayBefore',
+  ReminderMode.both: 'both',
 };

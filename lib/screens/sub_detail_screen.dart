@@ -412,6 +412,90 @@ void _showCategoryPicker(
   );
 }
 
+void _showReminderModePicker(
+  BuildContext context,
+  ReminderMode current,
+  ValueChanged<ReminderMode> onSelected,
+) {
+  showModalBottomSheet<void>(
+    context: context,
+    builder: (ctx) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'detail.reminder'.tr(),
+              style: Theme.of(ctx).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          ...ReminderMode.values.map(
+            (mode) => ListTile(
+              title: Text('detail.reminder_${mode.name}'.tr()),
+              leading: mode == current
+                  ? Icon(Icons.radio_button_checked, color: Theme.of(ctx).colorScheme.primary)
+                  : const Icon(Icons.radio_button_unchecked),
+              onTap: () {
+                Navigator.of(ctx).pop();
+                onSelected(mode);
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    ),
+  );
+}
+
+void _showCardInput(BuildContext context, String? current, ValueChanged<String?> onSelected) {
+  final controller = TextEditingController(text: current ?? '');
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (ctx) {
+      return Padding(
+        padding: EdgeInsets.only(
+          left: 24, right: 24, top: 24,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('detail.card_hint'.tr(), style: Theme.of(ctx).textTheme.titleMedium),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              maxLength: 4,
+              decoration: const InputDecoration(
+                hintText: '1234',
+                prefixText: '•••• ',
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (val) {
+                Navigator.of(ctx).pop();
+                onSelected(val.isEmpty ? null : val);
+              },
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                onSelected(controller.text.isEmpty ? null : controller.text);
+              },
+              child: Text('common.save'.tr()),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Main screen
 // ---------------------------------------------------------------------------
@@ -525,13 +609,11 @@ class SubDetailScreen extends HookConsumerWidget {
               nameController: nameController,
               nameFocusNode: nameFocusNode,
               onSaveName: onSaveName,
-              onTapColor: liveSlice.brand == null
-                  ? () => _showColorPicker(
-                        context,
-                        draft.value.color,
-                        (c) => saveUpdate(draft.value.copyWith(color: c)),
-                      )
-                  : null,
+              onTapColor: () => _showColorPicker(
+              context,
+              draft.value.color,
+              (c) => saveUpdate(draft.value.copyWith(color: c)),
+            ),
             ),
             const SizedBox(height: 24),
             Padding(
@@ -553,13 +635,11 @@ class SubDetailScreen extends HookConsumerWidget {
                 slice: draft.value,
                 onTapFrequency: () => _showFrequencyPicker(context, draft.value, saveUpdate),
                 onTapDate: () => _showDatePicker(context, draft.value, saveUpdate),
-                onTapColor: draft.value.brand == null
-                    ? () => _showColorPicker(
-                          context,
-                          draft.value.color,
-                          (c) => saveUpdate(draft.value.copyWith(color: c)),
-                        )
-                    : null,
+                onTapColor: () => _showColorPicker(
+                  context,
+                  draft.value.color,
+                  (c) => saveUpdate(draft.value.copyWith(color: c)),
+                ),
                 onTapCategory: draft.value.brand == null
                     ? () => _showCategoryPicker(
                           context,
@@ -567,6 +647,12 @@ class SubDetailScreen extends HookConsumerWidget {
                           (cat) => saveUpdate(draft.value.copyWith(category: cat)),
                         )
                     : null,
+                onTapReminder: () => _showReminderModePicker(
+                  context,
+                  draft.value.reminderMode,
+                  (mode) => saveUpdate(draft.value.copyWith(reminderMode: mode)),
+                ),
+                onTapCard: () => _showCardInput(context, draft.value.cardLastFour, (val) => saveUpdate(draft.value.copyWith(cardLastFour: val))),
               ),
             ),
             const SizedBox(height: 28),
@@ -613,7 +699,7 @@ class _HeroSection extends StatelessWidget {
       child: Row(
         children: [
           GestureDetector(
-            onTap: slice.brand == null ? onTapColor : null,
+            onTap: onTapColor,
             child: slice.brand != null
                 ? BrandLogo(brand: slice.brand, size: 72)
                 : Container(
@@ -786,35 +872,39 @@ class _StatCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           if (controller != null && focusNode != null && onSave != null)
-            Row(
-              children: [
-                Flexible(
-                  child: EditableText(
-                    onTapOutside: (event) {
-                      if (focusNode!.hasFocus) {
-                        focusNode!.unfocus();
-                        onSave!();
-                      }
-                    },
-                    controller: controller!,
-                    focusNode: focusNode!,
-                    style: theme.textTheme.headlineSmall!.copyWith(
-                      fontWeight: FontWeight.w700,
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => focusNode!.requestFocus(),
+              child: Row(
+                children: [
+                  Flexible(
+                    child: EditableText(
+                      onTapOutside: (event) {
+                        if (focusNode!.hasFocus) {
+                          focusNode!.unfocus();
+                          onSave!();
+                        }
+                      },
+                      controller: controller!,
+                      focusNode: focusNode!,
+                      style: theme.textTheme.headlineSmall!.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                      cursorColor: theme.colorScheme.primary,
+                      backgroundCursorColor: theme.colorScheme.onSurfaceVariant,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      onSubmitted: (_) => onSave!(),
+                      textInputAction: TextInputAction.done,
                     ),
-                    cursorColor: theme.colorScheme.primary,
-                    backgroundCursorColor: theme.colorScheme.onSurfaceVariant,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onSubmitted: (_) => onSave!(),
-                    textInputAction: TextInputAction.done,
                   ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.edit_outlined,
-                  size: 14,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.edit_outlined,
+                    size: 14,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ],
+              ),
             )
           else
             Text(
@@ -847,6 +937,8 @@ class _DetailsSection extends StatelessWidget {
     required this.onTapDate,
     this.onTapColor,
     this.onTapCategory,
+    required this.onTapReminder,
+    required this.onTapCard,
   });
 
   final SubSlice slice;
@@ -854,6 +946,8 @@ class _DetailsSection extends StatelessWidget {
   final VoidCallback onTapDate;
   final VoidCallback? onTapColor;
   final VoidCallback? onTapCategory;
+  final VoidCallback onTapReminder;
+  final VoidCallback onTapCard;
 
   @override
   Widget build(BuildContext context) {
@@ -885,11 +979,15 @@ class _DetailsSection extends StatelessWidget {
       ),
       _DetailRow(
         label: 'detail.payment_method'.tr(),
-        value: 'detail.not_set'.tr(),
+        value: slice.cardLastFour != null ? '•••• ${slice.cardLastFour}' : 'detail.not_set'.tr(),
+        hasChevron: true,
+        onTap: onTapCard,
       ),
       _DetailRow(
         label: 'detail.reminder'.tr(),
-        value: 'detail.not_set'.tr(),
+        value: 'detail.reminder_${slice.reminderMode.name}'.tr(),
+        hasChevron: true,
+        onTap: onTapReminder,
       ),
     ];
 
