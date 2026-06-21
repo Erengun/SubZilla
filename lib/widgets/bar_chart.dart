@@ -1,38 +1,31 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/brand.dart';
 import '../models/sub_slice.dart';
-import '../providers/settings_controller.dart';
-import '../providers/subs_controller.dart';
 import 'brand_logo.dart';
 
-class SubsBar extends ConsumerStatefulWidget {
-  const SubsBar({super.key, this.multiplier = 1.0});
+class SubsBar extends StatefulWidget {
+  const SubsBar({
+    super.key,
+    required this.slices,
+    required this.currency,
+    this.multiplier = 1.0,
+  });
 
+  final List<SubSlice> slices;
+  final String currency;
   final double multiplier;
 
   @override
-  ConsumerState<SubsBar> createState() => _SubsBarState();
+  State<SubsBar> createState() => _SubsBarState();
 }
 
-class _SubsBarState extends ConsumerState<SubsBar> {
+class _SubsBarState extends State<SubsBar> {
   int? touchedIndex;
 
   @override
   Widget build(BuildContext context) {
-    final slicesAsync = ref.watch(subsControllerProvider);
-    final settingsAsync = ref.watch(settingsControllerProvider);
-
-    return slicesAsync.when(
-      error: (e, st) => const SizedBox.shrink(),
-      loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-      data: (slices) => settingsAsync.when(
-        error: (e, st) => const SizedBox.shrink(),
-        loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-        data: (settings) => _buildChart(slices, settings.currency.symbol, widget.multiplier),
-      ),
-    );
+    return _buildChart(widget.slices, widget.currency, widget.multiplier);
   }
 
   Widget _buildChart(List<SubSlice> slices, String currency, double multiplier) {

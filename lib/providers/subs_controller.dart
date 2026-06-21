@@ -77,6 +77,16 @@ class SubsController extends _$SubsController {
 
   Future<void> scheduleRepeatingNotification(SubSlice slice, int index) async {
     if (slice.reminderMode == ReminderMode.none) return;
+    if (slice.status == SubStatus.cancelled || slice.status == SubStatus.paused) return;
+
+    final idDue = index * 2;
+    final idDueTomorrow = index * 2 + 1;
+
+    if (slice.status == SubStatus.freeTrial) {
+      await _scheduleTrialEndNotification(slice, idDue, idDueTomorrow);
+      return;
+    }
+
     final now = tz.TZDateTime.now(tz.local);
 
     // Compute the next due date for this subscription
@@ -114,9 +124,6 @@ class SubsController extends _$SubsController {
         repeatComponents = DateTimeComponents.dateAndTime;
     }
 
-    final idDue = index * 2;
-    final idDueTomorrow = index * 2 + 1;
-
     // "Due today" — repeats at the correct cadence
     if (slice.reminderMode == ReminderMode.onDay || slice.reminderMode == ReminderMode.both) {
       await LocalNotificationService.instance.scheduleNotification(
@@ -137,6 +144,47 @@ class SubsController extends _$SubsController {
         body: 'Your ${slice.name} subscription is due tomorrow.',
         scheduledDate: nextDate.subtract(const Duration(days: 1)),
         matchDateTimeComponents: repeatComponents,
+      );
+    }
+  }
+
+  Future<void> _scheduleTrialEndNotification(SubSlice slice, int idDue, int idDueTomorrow) async {
+    final trialEndDate = slice.trialEndDate;
+    if (trialEndDate == null) return;
+    final now = tz.TZDateTime.now(tz.local);
+    final endDate = tz.TZDateTime(
+      tz.local,
+      trialEndDate.year,
+      trialEndDate.month,
+      trialEndDate.day,
+      12,
+    );
+
+    // One-shot "trial ends today" — trial end dates don't repeat.
+    // If noon already passed but it's still the trial's last day, fire almost immediately
+    // instead of dropping the reminder.
+    final isEndDateToday =
+        endDate.year == now.year && endDate.month == now.month && endDate.day == now.day;
+    final dueAt = endDate.isAfter(now) ? endDate : (isEndDateToday ? now.add(const Duration(seconds: 5)) : null);
+    if ((slice.reminderMode == ReminderMode.onDay || slice.reminderMode == ReminderMode.both) &&
+        dueAt != null) {
+      await LocalNotificationService.instance.scheduleNotification(
+        id: idDue,
+        title: 'Subscription Reminder',
+        body: 'Your ${slice.name} free trial ends today.',
+        scheduledDate: dueAt,
+      );
+    }
+
+    // One-shot "trial ends tomorrow"
+    final dayBefore = endDate.subtract(const Duration(days: 1));
+    if ((slice.reminderMode == ReminderMode.dayBefore || slice.reminderMode == ReminderMode.both) &&
+        dayBefore.isAfter(now)) {
+      await LocalNotificationService.instance.scheduleNotification(
+        id: idDueTomorrow,
+        title: 'Subscription Reminder',
+        body: 'Your ${slice.name} free trial ends tomorrow.',
+        scheduledDate: dayBefore,
       );
     }
   }

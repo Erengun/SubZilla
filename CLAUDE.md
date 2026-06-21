@@ -18,6 +18,10 @@ Must use caveman skill. Terse responses. Drop filler, articles, hedging. Fragmen
 - dont use git commands.
 - **UI/UX Excellence:** Exhibit impeccable skill in frontend design. Deliver modern, polished, and pixel-perfect layouts with exceptional attention to spacing, typography, and visual hierarchy.
 - dont use git commands.
+- NEVER use `shrinkWrap: true` — use `ConstrainedBox(maxHeight: N)` or `Expanded`/`Flexible`
+- NEVER spread `.map()` results inline in a Column — use `ListView.builder` or `GridView.builder`
+- NEVER use raw `Map` in the presentation layer — wrap in typed model classes
+- Prefer widget classes (`StatelessWidget`/`StatefulWidget`/`ConsumerWidget`) over widget functions or inline builders
 
 ## 1. Think Before Coding
 

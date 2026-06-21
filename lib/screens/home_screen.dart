@@ -12,6 +12,7 @@ import '../providers/settings_controller.dart';
 import '../providers/subs_controller.dart';
 import '../widgets/add_subs_dialog.dart';
 import '../widgets/brand_logo.dart';
+import '../widgets/status_picker.dart';
 import '../widgets/sub_zilla_app_bar.dart';
 
 class HomeScreen extends HookConsumerWidget {
@@ -87,10 +88,11 @@ class HomeScreen extends HookConsumerWidget {
         );
       }
 
-      final total = slices.fold<double>(0, (a, b) => a + b.monthlyAmount);
-      final sortedSlices = List<SubSlice>.from(slices)
+      final activeSlices = slices.activeOnly;
+      final total = activeSlices.fold<double>(0, (a, b) => a + b.monthlyAmount);
+      final sortedSlices = List<SubSlice>.from(activeSlices)
         ..sort((a, b) => b.monthlyAmount.compareTo(a.monthlyAmount));
-      final mostExpensive = sortedSlices.first;
+      final mostExpensive = sortedSlices.isNotEmpty ? sortedSlices.first : null;
 
       return SafeArea(
         bottom: false,
@@ -99,7 +101,7 @@ class HomeScreen extends HookConsumerWidget {
             // Summary Card
             _SummaryCard(
               total: showYearly ? total * 12 : total,
-              count: slices.length,
+              count: activeSlices.length,
               mostExpensive: mostExpensive,
               currencySymbol: settings.currency.symbol,
               showYearly: showYearly,
@@ -157,7 +159,7 @@ class _SummaryCard extends StatelessWidget {
 
   final double total;
   final int count;
-  final SubSlice mostExpensive;
+  final SubSlice? mostExpensive;
   final String currencySymbol;
   final bool showYearly;
 
@@ -218,31 +220,33 @@ class _SummaryCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white12,
-              borderRadius: BorderRadius.circular(8),
+          if (mostExpensive != null) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white12,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    'home.most_expensive'.tr(),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.white70,
+                        ),
+                  ),
+                  Text(
+                    "${mostExpensive!.name} ($currencySymbol${mostExpensive!.amount.toStringAsFixed(2)}${'frequency.short.${mostExpensive!.frequency.name.toLowerCase()}'.tr()})",
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                Text(
-                  'home.most_expensive'.tr(),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white70,
-                      ),
-                ),
-                Text(
-                  "${mostExpensive.name} ($currencySymbol${mostExpensive.amount.toStringAsFixed(2)}${'frequency.short.${mostExpensive.frequency.name.toLowerCase()}'.tr()})",
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-              ],
-            ),
-          ),
+          ],
         ],
       ),
     );
@@ -301,11 +305,25 @@ class _CompactSubscriptionTile extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        slice.name,
-                        style: Theme.of(context).textTheme.labelLarge,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              slice.name,
+                              style: Theme.of(context).textTheme.labelLarge,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (slice.status != SubStatus.active) ...[
+                            const SizedBox(width: 6),
+                            StatusBadge(
+                              status: slice.status,
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              borderRadius: 6,
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -451,27 +469,6 @@ class _LiquidGlassSegmentedControl extends StatelessWidget {
     refractiveIndex: 1.15,
   );
 
-  Widget _labelsRow(BuildContext context) {
-    final theme = Theme.of(context);
-    Widget seg(String key, bool active) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            key.tr(),
-            style: theme.textTheme.labelSmall?.copyWith(
-              fontWeight: active ? FontWeight.w600 : FontWeight.normal,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-        );
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        seg('home.view_monthly', !showYearly),
-        seg('home.view_yearly', showYearly),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -482,7 +479,7 @@ class _LiquidGlassSegmentedControl extends StatelessWidget {
         child: Stack(
           children: [
             // Drives Stack width
-            Opacity(opacity: 0, child: _labelsRow(context)),
+            Opacity(opacity: 0, child: _LabelsRow(showYearly: showYearly)),
             // Background glass
             const Positioned.fill(
               child: LiquidGlass.withOwnLayer(
@@ -511,8 +508,47 @@ class _LiquidGlassSegmentedControl extends StatelessWidget {
               ),
             ),
             // Visible labels on top
-            _labelsRow(context),
+            _LabelsRow(showYearly: showYearly),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LabelsRow extends StatelessWidget {
+  const _LabelsRow({required this.showYearly});
+
+  final bool showYearly;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _SegmentLabel(label: 'home.view_monthly', active: !showYearly),
+        _SegmentLabel(label: 'home.view_yearly', active: showYearly),
+      ],
+    );
+  }
+}
+
+class _SegmentLabel extends StatelessWidget {
+  const _SegmentLabel({required this.label, required this.active});
+
+  final String label;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Text(
+        label.tr(),
+        style: theme.textTheme.labelSmall?.copyWith(
+          fontWeight: active ? FontWeight.w600 : FontWeight.normal,
+          color: theme.colorScheme.onSurface,
         ),
       ),
     );

@@ -79,5 +79,37 @@ void main() {
       final data = WidgetUpdateService.buildWidgetData(subs, r'$');
       expect(data['monthlyTotal'], closeTo(19.98, 0.001));
     });
+
+    test('cancelled and paused subs are excluded from subs list and total', () {
+      final subs = [
+        SubSlice(
+          name: 'Netflix',
+          amount: 9.99,
+          color: 0xFF000000,
+          startDate: DateTime(2025),
+        ),
+        SubSlice(
+          name: 'Old Gym',
+          amount: 30,
+          color: 0xFF000001,
+          startDate: DateTime(2025),
+          status: SubStatus.cancelled,
+        ),
+        SubSlice(
+          name: 'Paused Box',
+          amount: 20,
+          color: 0xFF000002,
+          startDate: DateTime(2025),
+          status: SubStatus.paused,
+        ),
+      ];
+
+      final data = WidgetUpdateService.buildWidgetData(subs, r'$');
+      final subsJson = data['subs'] as List;
+
+      expect(subsJson.length, 1);
+      expect((subsJson.first as Map<String, dynamic>)['name'], 'Netflix');
+      expect(data['monthlyTotal'], 9.99);
+    });
   });
 }

@@ -10,6 +10,7 @@ import '../providers/settings_controller.dart';
 import '../providers/subs_controller.dart';
 import '../utils/color_palette.dart';
 import 'brand_logo.dart';
+import 'status_picker.dart';
 
 const _kPopularBrandNames = [
   'Netflix',
@@ -29,6 +30,7 @@ class AddSubsSheet extends HookConsumerWidget {
     final searchCtrl = useTextEditingController();
     final nameCtrl = useTextEditingController();
     final amountCtrl = useTextEditingController();
+    final noteCtrl = useTextEditingController();
     final brandFocusNode = useFocusNode();
     final theme = Theme.of(context);
 
@@ -113,10 +115,12 @@ class AddSubsSheet extends HookConsumerWidget {
           final amount = double.parse(
             amountCtrl.text.replaceAll(',', '.'),
           );
+          final note = noteCtrl.text.trim();
           ref.read(subsControllerProvider.notifier).addSlice(
             draftSlice.value.copyWith(
               name: nameCtrl.text.trim(),
               amount: amount,
+              note: note.isEmpty ? null : note,
             ),
           );
           Navigator.pop(context);
@@ -564,9 +568,10 @@ class AddSubsSheet extends HookConsumerWidget {
                                       ),
                                       Expanded(
                                         child: Text(
-                                          _formatDate(
-                                            draftSlice.value.startDate,
-                                          ),
+                                          DateFormat(
+                                            'MMM d, y',
+                                            context.locale.toString(),
+                                          ).format(draftSlice.value.startDate.toLocal()),
                                           style: theme.textTheme.bodyMedium,
                                         ),
                                       ),
@@ -578,6 +583,158 @@ class AddSubsSheet extends HookConsumerWidget {
                                       ),
                                     ],
                                   ),
+                                ),
+                              ),
+                              Divider(
+                                height: 0,
+                                indent: 16,
+                                color: dividerColor,
+                              ),
+                              // Status
+                              InkWell(
+                                onTap: () => showStatusPicker(
+                                  context,
+                                  draftSlice.value.status,
+                                  (status) => draftSlice.value =
+                                      draftSlice.value.copyWith(
+                                    status: status,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 90,
+                                        child: Text(
+                                          'dialogs.status_label'.tr(),
+                                          style: labelStyle,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          'detail.status_${draftSlice.value.status.name}'
+                                              .tr(),
+                                          style: theme.textTheme.bodyMedium,
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.chevron_right_rounded,
+                                        size: 18,
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              if (draftSlice.value.status ==
+                                  SubStatus.freeTrial) ...[
+                                Divider(
+                                  height: 0,
+                                  indent: 16,
+                                  color: dividerColor,
+                                ),
+                                // Trial ends
+                                InkWell(
+                                  onTap: () async {
+                                    final pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate:
+                                          draftSlice.value.trialEndDate ??
+                                              DateTime.now(),
+                                      firstDate: DateTime(2020),
+                                      lastDate: DateTime(2100),
+                                    );
+                                    if (pickedDate != null) {
+                                      draftSlice.value =
+                                          draftSlice.value.copyWith(
+                                        trialEndDate: pickedDate,
+                                      );
+                                    }
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 14,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 90,
+                                          child: Text(
+                                            'dialogs.trial_ends_label'.tr(),
+                                            style: labelStyle,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            draftSlice.value.trialEndDate !=
+                                                    null
+                                                ? DateFormat(
+                                                    'MMM d, y',
+                                                    context.locale.toString(),
+                                                  ).format(draftSlice.value
+                                                      .trialEndDate!
+                                                      .toLocal())
+                                                : 'detail.not_set'.tr(),
+                                            style: theme.textTheme.bodyMedium,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.chevron_right_rounded,
+                                          size: 18,
+                                          color: theme
+                                              .colorScheme.onSurfaceVariant,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              Divider(
+                                height: 0,
+                                indent: 16,
+                                color: dividerColor,
+                              ),
+                              // Note
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 4,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 12),
+                                      child: SizedBox(
+                                        width: 90,
+                                        child: Text(
+                                          'dialogs.note_label'.tr(),
+                                          style: labelStyle,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: noteCtrl,
+                                        maxLines: 3,
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                        ),
+                                        style: theme.textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -758,15 +915,6 @@ class AddSubsSheet extends HookConsumerWidget {
       ),
     );
   }
-}
-
-String _formatDate(DateTime date) {
-  final local = date.toLocal();
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-  ];
-  return '${months[local.month - 1]} ${local.day}, ${local.year}';
 }
 
 class _PopularBrandCard extends StatelessWidget {

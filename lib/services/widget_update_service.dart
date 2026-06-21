@@ -10,9 +10,10 @@ class WidgetUpdateService {
   static final instance = WidgetUpdateService._();
 
   static Map<String, dynamic> buildWidgetData(
-    List<SubSlice> subs,
+    List<SubSlice> allSubs,
     String currency,
   ) {
+    final subs = allSubs.activeOnly;
     final subsJson = subs
         .map((s) => {
               'name': s.name,
@@ -37,9 +38,11 @@ class WidgetUpdateService {
     try {
       final data = buildWidgetData(subs, currencySymbol);
       await HomeWidget.saveWidgetData('subs_data', jsonEncode(data));
-      await HomeWidget.updateWidget(iOSName: 'MonthlySpendWidget', androidName: 'SubsWidget');
-      await HomeWidget.updateWidget(iOSName: 'NextDueWidget', androidName: 'SubsWidget');
-      await HomeWidget.updateWidget(iOSName: 'UpcomingWidget', androidName: 'SubsWidget');
+      await Future.wait([
+        HomeWidget.updateWidget(iOSName: 'MonthlySpendWidget', androidName: 'SubsWidget'),
+        HomeWidget.updateWidget(iOSName: 'NextDueWidget', androidName: 'SubsWidget'),
+        HomeWidget.updateWidget(iOSName: 'UpcomingWidget', androidName: 'SubsWidget'),
+      ]);
     } catch (_) {
       // Widgets are non-critical — silently ignore errors.
     }

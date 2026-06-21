@@ -133,7 +133,10 @@
 		"name_label": "İsim",
 		"search_placeholder": "{}+ hizmet ara",
 		"popular": "POPÜLER",
-		"or_enter_manually": "VEYA MANUEL GİRİN"
+		"or_enter_manually": "VEYA MANUEL GİRİN",
+		"note_label": "Not",
+		"status_label": "Durum",
+		"trial_ends_label": "Deneme bitiş"
 	},
 	"menu": {
 		"main_menu": "Ana Menü",
@@ -218,6 +221,14 @@
 		"delete_confirm": "{} aboneliğini silmek istediğinizden emin misiniz?",
 		"delete_action": "Sil",
 		"cancel": "İptal",
-		"card_hint": "Son 4 hane"
+		"card_hint": "Son 4 hane",
+		"note": "Not",
+		"note_hint": "Bir not ekleyin",
+		"status": "Durum",
+		"status_active": "Aktif",
+		"status_freeTrial": "Ücretsiz Deneme",
+		"status_paused": "Duraklatıldı",
+		"status_cancelled": "İptal Edildi",
+		"trial_ends": "Deneme bitişi"
 	}
 }

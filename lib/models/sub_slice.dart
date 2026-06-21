@@ -13,6 +13,8 @@ enum Frequency {
 
 enum ReminderMode { none, onDay, dayBefore, both }
 
+enum SubStatus { active, freeTrial, paused, cancelled }
+
 @freezed
 abstract class SubSlice with _$SubSlice {
   const factory SubSlice({
@@ -25,6 +27,9 @@ abstract class SubSlice with _$SubSlice {
     String? category,
     @Default(ReminderMode.both) ReminderMode reminderMode,
     String? cardLastFour,
+    @Default(SubStatus.active) SubStatus status,
+    String? note,
+    DateTime? trialEndDate,
   }) = _SubSlice;
 
   factory SubSlice.fromJson(Map<String, dynamic> json) =>
@@ -44,4 +49,9 @@ abstract class SubSlice with _$SubSlice {
         return amount / 12;
     }
   }
+}
+
+extension SubSliceListX on List<SubSlice> {
+  List<SubSlice> get activeOnly =>
+      where((s) => s.status == SubStatus.active).toList();
 }

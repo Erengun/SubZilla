@@ -10,6 +10,7 @@ import '../providers/settings_controller.dart';
 import '../providers/subs_controller.dart';
 import '../utils/color_palette.dart';
 import '../widgets/brand_logo.dart';
+import '../widgets/status_picker.dart';
 
 // ---------------------------------------------------------------------------
 // Helper functions
@@ -449,6 +450,29 @@ void _showReminderModePicker(
   );
 }
 
+void _showTrialEndPicker(
+  BuildContext context,
+  DateTime? current,
+  ValueChanged<DateTime> onSelected,
+) {
+  var selected = current ?? DateTime.now();
+  showCupertinoModalPopup<void>(
+    context: context,
+    builder: (ctx) {
+      final theme = Theme.of(ctx);
+      return Container(
+        height: 250,
+        color: theme.colorScheme.surface,
+        child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.date,
+          initialDateTime: selected,
+          onDateTimeChanged: (date) => selected = date,
+        ),
+      );
+    },
+  ).then((_) => onSelected(selected));
+}
+
 void _showCardInput(BuildContext context, String? current, ValueChanged<String?> onSelected) {
   final controller = TextEditingController(text: current ?? '');
   showModalBottomSheet<void>(
@@ -486,6 +510,48 @@ void _showCardInput(BuildContext context, String? current, ValueChanged<String?>
               onPressed: () {
                 Navigator.of(ctx).pop();
                 onSelected(controller.text.isEmpty ? null : controller.text);
+              },
+              child: Text('common.save'.tr()),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+void _showNoteInput(BuildContext context, String? current, ValueChanged<String?> onSelected) {
+  final controller = TextEditingController(text: current ?? '');
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (ctx) {
+      return Padding(
+        padding: EdgeInsets.only(
+          left: 24, right: 24, top: 24,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('detail.note'.tr(), style: Theme.of(ctx).textTheme.titleMedium),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: 'detail.note_hint'.tr(),
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                final trimmed = controller.text.trim();
+                onSelected(trimmed.isEmpty ? null : trimmed);
               },
               child: Text('common.save'.tr()),
             ),
@@ -653,6 +719,9 @@ class SubDetailScreen extends HookConsumerWidget {
                   (mode) => saveUpdate(draft.value.copyWith(reminderMode: mode)),
                 ),
                 onTapCard: () => _showCardInput(context, draft.value.cardLastFour, (val) => saveUpdate(draft.value.copyWith(cardLastFour: val))),
+                onTapNote: () => _showNoteInput(context, draft.value.note, (val) => saveUpdate(draft.value.copyWith(note: val))),
+                onTapStatus: () => showStatusPicker(context, draft.value.status, (status) => saveUpdate(draft.value.copyWith(status: status))),
+                onTapTrialEnds: () => _showTrialEndPicker(context, draft.value.trialEndDate, (date) => saveUpdate(draft.value.copyWith(trialEndDate: date))),
               ),
             ),
             const SizedBox(height: 28),
@@ -766,6 +835,10 @@ class _HeroSection extends StatelessWidget {
                     ),
                   ),
                 ],
+                if (slice.status != SubStatus.active) ...[
+                  const SizedBox(height: 6),
+                  StatusBadge(status: slice.status),
+                ],
               ],
             ),
           ),
@@ -824,7 +897,7 @@ class _StatCardsRow extends StatelessWidget {
         Expanded(
           child: _StatCard(
             label: 'detail.next_charge'.tr(),
-            value: DateFormat('MMM d').format(nextChargeDate),
+            value: DateFormat('MMM d', context.locale.toString()).format(nextChargeDate),
             sub: nextSub,
           ),
         ),
@@ -939,6 +1012,9 @@ class _DetailsSection extends StatelessWidget {
     this.onTapCategory,
     required this.onTapReminder,
     required this.onTapCard,
+    required this.onTapStatus,
+    required this.onTapTrialEnds,
+    required this.onTapNote,
   });
 
   final SubSlice slice;
@@ -948,6 +1024,9 @@ class _DetailsSection extends StatelessWidget {
   final VoidCallback? onTapCategory;
   final VoidCallback onTapReminder;
   final VoidCallback onTapCard;
+  final VoidCallback onTapStatus;
+  final VoidCallback onTapTrialEnds;
+  final VoidCallback onTapNote;
 
   @override
   Widget build(BuildContext context) {
@@ -964,10 +1043,25 @@ class _DetailsSection extends StatelessWidget {
         hasChevron: true,
         onTap: onTapFrequency,
       ),
+      _DetailRow(
+        label: 'detail.status'.tr(),
+        value: 'detail.status_${slice.status.name}'.tr(),
+        hasChevron: true,
+        onTap: onTapStatus,
+      ),
+      if (slice.status == SubStatus.freeTrial)
+        _DetailRow(
+          label: 'detail.trial_ends'.tr(),
+          value: slice.trialEndDate != null
+              ? DateFormat('MMM d, y', context.locale.toString()).format(slice.trialEndDate!)
+              : 'detail.not_set'.tr(),
+          hasChevron: true,
+          onTap: onTapTrialEnds,
+        ),
       _ColorDetailRow(color: Color(slice.color), onTap: onTapColor, hasChevron: onTapColor != null),
       _DetailRow(
         label: 'detail.started'.tr(),
-        value: DateFormat('MMM d, y').format(slice.startDate),
+        value: DateFormat('MMM d, y', context.locale.toString()).format(slice.startDate),
         hasChevron: true,
         onTap: onTapDate,
       ),
@@ -988,6 +1082,12 @@ class _DetailsSection extends StatelessWidget {
         value: 'detail.reminder_${slice.reminderMode.name}'.tr(),
         hasChevron: true,
         onTap: onTapReminder,
+      ),
+      _DetailRow(
+        label: 'detail.note'.tr(),
+        value: slice.note ?? 'detail.not_set'.tr(),
+        hasChevron: true,
+        onTap: onTapNote,
       ),
     ];
 
@@ -1213,7 +1313,7 @@ class _PaymentHistoryRow extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            DateFormat('MMM dd').format(date),
+            DateFormat('MMM dd', context.locale.toString()).format(date),
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w500,
             ),

@@ -36,6 +36,7 @@ class MyApp extends ConsumerWidget {
           settingsControllerProvider.select((value) => value.value?.theme),
         ) ??
         ThemeMode.system;
+    //TODO: Merge light and dark theme providers into a single provider that returns both themes as a tuple or a class
     final light = ref.watch(lightThemeProvider);
     final dark = ref.watch(darkThemeProvider);
     final router = ref.watch(goRouterProvider);

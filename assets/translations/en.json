@@ -133,7 +133,10 @@
 		"name_label": "Name",
 		"search_placeholder": "Search {}+ services",
 		"popular": "POPULAR",
-		"or_enter_manually": "OR ENTER MANUALLY"
+		"or_enter_manually": "OR ENTER MANUALLY",
+		"note_label": "Note",
+		"status_label": "Status",
+		"trial_ends_label": "Trial ends"
 	},
 	"menu": {
 		"main_menu": "Main Menu",
@@ -218,6 +221,14 @@
 		"delete_confirm": "Are you sure you want to delete {}?",
 		"delete_action": "Delete",
 		"cancel": "Cancel",
-		"card_hint": "Last 4 digits"
+		"card_hint": "Last 4 digits",
+		"note": "Note",
+		"note_hint": "Add a note",
+		"status": "Status",
+		"status_active": "Active",
+		"status_freeTrial": "Free Trial",
+		"status_paused": "Paused",
+		"status_cancelled": "Cancelled",
+		"trial_ends": "Trial ends"
 	}
 }

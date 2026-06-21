@@ -55,5 +55,40 @@ void main() {
       );
       expect(slice.frequency, Frequency.monthly);
     });
+
+    test('default status is active', () {
+      final slice = SubSlice(
+        name: 'Test',
+        amount: 10,
+        color: 0,
+        startDate: DateTime.now(),
+      );
+      expect(slice.status, SubStatus.active);
+    });
+  });
+
+  group('SubSliceListX.activeOnly', () {
+    SubSlice makeSlice(String name, SubStatus status) => SubSlice(
+          name: name,
+          amount: 10,
+          color: 0,
+          startDate: DateTime.now(),
+          status: status,
+        );
+
+    test('keeps only active subscriptions', () {
+      final slices = [
+        makeSlice('Active', SubStatus.active),
+        makeSlice('Trial', SubStatus.freeTrial),
+        makeSlice('Paused', SubStatus.paused),
+        makeSlice('Cancelled', SubStatus.cancelled),
+      ];
+
+      expect(slices.activeOnly.map((s) => s.name), ['Active']);
+    });
+
+    test('empty list stays empty', () {
+      expect(<SubSlice>[].activeOnly, isEmpty);
+    });
   });
 }

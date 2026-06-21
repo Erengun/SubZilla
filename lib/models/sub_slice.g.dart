@@ -22,6 +22,13 @@ _SubSlice _$SubSliceFromJson(Map<String, dynamic> json) => _SubSlice(
       $enumDecodeNullable(_$ReminderModeEnumMap, json['reminderMode']) ??
       ReminderMode.both,
   cardLastFour: json['cardLastFour'] as String?,
+  status:
+      $enumDecodeNullable(_$SubStatusEnumMap, json['status']) ??
+      SubStatus.active,
+  note: json['note'] as String?,
+  trialEndDate: json['trialEndDate'] == null
+      ? null
+      : DateTime.parse(json['trialEndDate'] as String),
 );
 
 Map<String, dynamic> _$SubSliceToJson(_SubSlice instance) => <String, dynamic>{
@@ -34,6 +41,9 @@ Map<String, dynamic> _$SubSliceToJson(_SubSlice instance) => <String, dynamic>{
   'category': instance.category,
   'reminderMode': _$ReminderModeEnumMap[instance.reminderMode]!,
   'cardLastFour': instance.cardLastFour,
+  'status': _$SubStatusEnumMap[instance.status]!,
+  'note': instance.note,
+  'trialEndDate': instance.trialEndDate?.toIso8601String(),
 };
 
 const _$FrequencyEnumMap = {
@@ -48,4 +58,11 @@ const _$ReminderModeEnumMap = {
   ReminderMode.onDay: 'onDay',
   ReminderMode.dayBefore: 'dayBefore',
   ReminderMode.both: 'both',
+};
+
+const _$SubStatusEnumMap = {
+  SubStatus.active: 'active',
+  SubStatus.freeTrial: 'freeTrial',
+  SubStatus.paused: 'paused',
+  SubStatus.cancelled: 'cancelled',
 };

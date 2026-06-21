@@ -73,7 +73,7 @@ class AnalyticsScreen extends HookConsumerWidget {
       return Center(child: Text('analytics.no_data'.tr()));
     }
 
-    final sorted = [...slices]
+    final sorted = [...slices.activeOnly]
       ..sort((a, b) => b.monthlyAmount.compareTo(a.monthlyAmount));
     final multiplier = period.value.multiplier;
     final total =
@@ -166,9 +166,11 @@ class AnalyticsScreen extends HookConsumerWidget {
                     child: chartMode.value == _ChartMode.price
                         ? SubsBar(
                             key: const ValueKey(_ChartMode.price),
+                            slices: sorted,
+                            currency: settings.currency.symbol,
                             multiplier: period.value.multiplier,
                           )
-                        : const SubsPie(key: ValueKey(_ChartMode.percentage)),
+                        : SubsPie(key: const ValueKey(_ChartMode.percentage), slices: sorted),
                   ),
                 ],
               ),
@@ -291,7 +293,7 @@ class _SummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '$currency${(total / count).toStringAsFixed(2)}',
+                  '$currency${(count == 0 ? 0 : total / count).toStringAsFixed(2)}',
                   overflow: TextOverflow.ellipsis,
                   style: textTheme.headlineSmall
                       ?.copyWith(fontWeight: FontWeight.bold),
