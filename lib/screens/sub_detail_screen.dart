@@ -5,6 +5,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import '../models/sub_slice.dart';
 import '../providers/settings_controller.dart';
 import '../providers/subs_controller.dart';
@@ -460,7 +461,7 @@ void _showTrialEndPicker(
     context: context,
     builder: (ctx) {
       final theme = Theme.of(ctx);
-      return Container(
+      return ColoredBox(
         color: theme.colorScheme.surface,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -470,7 +471,7 @@ void _showTrialEndPicker(
               children: [
                 CupertinoButton(
                   child: Text('detail.cancel'.tr()),
-                  onPressed: () => Navigator.of(ctx).pop(null),
+                  onPressed: () => Navigator.of(ctx).pop(),
                 ),
                 CupertinoButton(
                   child: Text('common.save'.tr()),
