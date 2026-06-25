@@ -337,7 +337,7 @@ class EditSubsDialog extends HookConsumerWidget {
                         return DropdownMenuItem(
                           value: f,
                           child: Text(
-                            'frequency_names.${f.name.toLowerCase()}'.tr(),
+                            'frequency.${f.name}'.tr(),
                           ),
                         );
                       }).toList(),

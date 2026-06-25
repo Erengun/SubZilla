@@ -133,7 +133,7 @@ class HomeScreen extends HookConsumerWidget {
                 itemBuilder: (context, index) {
                   final slice = slices[index];
                   return _CompactSubscriptionTile(
-                    key: ValueKey('${slice.name}-$index'),
+                    key: ValueKey(slice.name),
                     slice: slice,
                     index: index,
                     currencySymbol: settings.currency.symbol,
@@ -428,7 +428,7 @@ class _SortButton extends ConsumerWidget {
               leading: const Icon(Icons.arrow_upward),
               title: Text('home.sort_amount_asc'.tr()),
               onTap: () {
-                notifier.sortSlices((a, b) => a.amount.compareTo(b.amount));
+                notifier.sortSlices((a, b) => a.monthlyAmount.compareTo(b.monthlyAmount));
                 Navigator.pop(ctx);
               },
             ),
@@ -436,7 +436,7 @@ class _SortButton extends ConsumerWidget {
               leading: const Icon(Icons.arrow_downward),
               title: Text('home.sort_amount_desc'.tr()),
               onTap: () {
-                notifier.sortSlices((a, b) => b.amount.compareTo(a.amount));
+                notifier.sortSlices((a, b) => b.monthlyAmount.compareTo(a.monthlyAmount));
                 Navigator.pop(ctx);
               },
             ),

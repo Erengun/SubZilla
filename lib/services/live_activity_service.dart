@@ -46,14 +46,15 @@ class LiveActivityService {
   bool _isDueToday(SubSlice sub, DateTime today) {
     final todayDate = DateTime(today.year, today.month, today.day);
     var candidate = DateTime(sub.startDate.year, sub.startDate.month, sub.startDate.day);
+    final anchorDay = sub.startDate.day;
     // Advance until we pass today or land on today
     while (candidate.isBefore(todayDate)) {
-      candidate = _advance(candidate, sub.frequency);
+      candidate = _advance(candidate, sub.frequency, anchorDay);
     }
     return candidate == todayDate;
   }
 
-  DateTime _advance(DateTime date, Frequency freq) {
+  DateTime _advance(DateTime date, Frequency freq, int anchorDay) {
     switch (freq) {
       case Frequency.daily:
         return date.add(const Duration(days: 1));
@@ -63,7 +64,7 @@ class LiveActivityService {
         final nextMonth = date.month == 12 ? 1 : date.month + 1;
         final nextYear = date.month == 12 ? date.year + 1 : date.year;
         final lastDay = DateTime(nextYear, nextMonth + 1, 0).day;
-        return DateTime(nextYear, nextMonth, date.day.clamp(1, lastDay));
+        return DateTime(nextYear, nextMonth, anchorDay.clamp(1, lastDay));
       case Frequency.yearly:
         return DateTime(date.year + 1, date.month, date.day);
     }

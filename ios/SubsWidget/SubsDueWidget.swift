@@ -40,7 +40,7 @@ struct SubsDueWidgetLiveActivity: Widget {
                 Text(subs.count == 1 ? "Subscription due today" : "\(subs.count) subscriptions due today")
                     .font(.caption)
                     .fontWeight(.semibold)
-                ForEach(subs.prefix(3), id: \.name) { sub in
+                ForEach(Array(subs.prefix(3).enumerated()), id: \.offset) { _, sub in
                     Text("\(sub.name) — \(sub.currency)\(String(format: "%.2f", sub.amount))")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
@@ -109,7 +109,7 @@ struct SubsDueWidgetLiveActivity: Widget {
     private func expandedBottom(context: ActivityViewContext<SubsDueAttributes>) -> some View {
         let subs = context.state.dueSubs
         return VStack(alignment: .leading, spacing: 4) {
-            ForEach(subs.prefix(3), id: \.name) { sub in
+            ForEach(Array(subs.prefix(3).enumerated()), id: \.offset) { _, sub in
                 HStack {
                     Circle()
                         .fill(Color(flutterARGB: sub.color))

@@ -112,7 +112,7 @@ private fun UpcomingSubRow(sub: WidgetSub, dueDate: LocalDate, today: LocalDate,
         )
         Spacer(modifier = GlanceModifier.width(10.dp))
         Text(
-            "$currency${String.format("%.2f", sub.amount)}",
+            "$currency${String.format(java.util.Locale.US, "%.2f", sub.amount)}",
             style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.primary)
         )
     }
@@ -149,7 +149,7 @@ private fun MonthlySpendContent(data: WidgetData?) {
         )
         Spacer(modifier = GlanceModifier.defaultWeight())
         Text(
-            "${data.currency}${String.format("%.2f", data.monthlyTotal)}",
+            "${data.currency}${String.format(java.util.Locale.US, "%.2f", data.monthlyTotal)}",
             style = TextStyle(
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
@@ -240,7 +240,7 @@ private fun NextDueContent(data: WidgetData?, sorted: List<Triple<WidgetSub, Loc
         )
         Spacer(modifier = GlanceModifier.height(4.dp))
         Text(
-            "${data!!.currency}${String.format("%.2f", first.amount)}",
+            "${data!!.currency}${String.format(java.util.Locale.US, "%.2f", first.amount)}",
             style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.primary)
         )
         Spacer(modifier = GlanceModifier.defaultWeight())
@@ -310,7 +310,7 @@ private fun UpcomingContent(data: WidgetData?, sorted: List<Pair<WidgetSub, Loca
             )
             Spacer(modifier = GlanceModifier.defaultWeight())
             Text(
-                "${data!!.currency}${String.format("%.2f", data.monthlyTotal)} / mo",
+                "${data!!.currency}${String.format(java.util.Locale.US, "%.2f", data.monthlyTotal)} / mo",
                 style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.primary)
             )
         }

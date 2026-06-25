@@ -456,21 +456,43 @@ void _showTrialEndPicker(
   ValueChanged<DateTime> onSelected,
 ) {
   var selected = current ?? DateTime.now();
-  showCupertinoModalPopup<void>(
+  showCupertinoModalPopup<DateTime?>(
     context: context,
     builder: (ctx) {
       final theme = Theme.of(ctx);
       return Container(
-        height: 250,
         color: theme.colorScheme.surface,
-        child: CupertinoDatePicker(
-          mode: CupertinoDatePickerMode.date,
-          initialDateTime: selected,
-          onDateTimeChanged: (date) => selected = date,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CupertinoButton(
+                  child: Text('detail.cancel'.tr()),
+                  onPressed: () => Navigator.of(ctx).pop(null),
+                ),
+                CupertinoButton(
+                  child: Text('common.save'.tr()),
+                  onPressed: () => Navigator.of(ctx).pop(selected),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 216,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: selected,
+                onDateTimeChanged: (date) => selected = date,
+              ),
+            ),
+          ],
         ),
       );
     },
-  ).then((_) => onSelected(selected));
+  ).then((result) {
+    if (result != null) onSelected(result);
+  });
 }
 
 void _showCardInput(BuildContext context, String? current, ValueChanged<String?> onSelected) {
@@ -517,7 +539,7 @@ void _showCardInput(BuildContext context, String? current, ValueChanged<String?>
         ),
       );
     },
-  );
+  ).whenComplete(controller.dispose);
 }
 
 void _showNoteInput(BuildContext context, String? current, ValueChanged<String?> onSelected) {
@@ -559,7 +581,7 @@ void _showNoteInput(BuildContext context, String? current, ValueChanged<String?>
         ),
       );
     },
-  );
+  ).whenComplete(controller.dispose);
 }
 
 // ---------------------------------------------------------------------------

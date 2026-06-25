@@ -14,6 +14,6 @@ struct SubsWidgetBundle: WidgetBundle {
         MonthlySpendWidget()
         NextDueWidget()
         UpcomingWidget()
-        SubsDueWidgetLiveActivity()  // add this
+        SubsDueWidgetLiveActivity()
     }
 }

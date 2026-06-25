@@ -32,12 +32,19 @@ class LiveActivityChannel {
     }
 
     private func startActivity(subsJson: String) {
+        guard currentActivity == nil else { return }
         guard let data = subsJson.data(using: .utf8),
               let subs = try? JSONDecoder().decode([DueSub].self, from: data) else { return }
+        guard let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date()) else { return }
+        let staleDate = Calendar.current.startOfDay(for: tomorrow)
         let attributes = SubsDueAttributes(appName: "SubZilla")
         let state = SubsDueAttributes.ContentState(dueSubs: subs)
-        guard let content = try? ActivityContent(state: state, staleDate: Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!)) else { return }
-        currentActivity = try? Activity.request(attributes: attributes, content: content)
+        let content = ActivityContent(state: state, staleDate: staleDate)
+        do {
+            currentActivity = try Activity.request(attributes: attributes, content: content)
+        } catch {
+            // Live Activities not supported or denied
+        }
     }
 
     private func endActivity() {

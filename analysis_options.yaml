@@ -11,7 +11,7 @@ include: analysis_options_without_plugins.yaml
 
 plugins:
   #! DONT REMOVE: its false positive and riverpod lints dont work without it
-  riverpod_lint: ^3.1.4-dev.3
+  riverpod_lint: ^3.1.4
 
 
 analyzer:

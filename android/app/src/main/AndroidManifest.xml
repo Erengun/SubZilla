@@ -40,7 +40,8 @@
         <!-- Monthly Spend Widget -->
         <receiver
             android:name=".widget.MonthlySpendWidgetReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.BIND_APPWIDGET">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -52,7 +53,8 @@
         <!-- Next Due Widget -->
         <receiver
             android:name=".widget.NextDueWidgetReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.BIND_APPWIDGET">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -64,7 +66,8 @@
         <!-- Upcoming Widget -->
         <receiver
             android:name=".widget.UpcomingWidgetReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.BIND_APPWIDGET">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

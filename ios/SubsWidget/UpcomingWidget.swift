@@ -32,7 +32,7 @@ private func upcomingList(entry: SubsEntry, maxItems: Int) -> some View {
             .font(.caption)
             .fontWeight(.semibold)
             .foregroundStyle(.secondary)
-        ForEach(items, id: \.sub.name) { item in
+        ForEach(Array(items.enumerated()), id: \.offset) { _, item in
             HStack {
                 Circle()
                     .fill(Color(flutterARGB: item.sub.color))

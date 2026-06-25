@@ -5,7 +5,7 @@ import SwiftUI
 struct MonthlySpendSmallView: View {
     let entry: SubsEntry
     var body: some View {
-        if let data = entry.widgetData {
+        if let data = entry.widgetData, !data.subs.isEmpty {
             VStack(alignment: .leading, spacing: 4) {
                 Text("This Month")
                     .font(.caption2)

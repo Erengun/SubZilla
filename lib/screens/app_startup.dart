@@ -24,7 +24,7 @@ class _AppStartupState extends ConsumerState<AppStartup> {
   @override
   void initState() {
     super.initState();
-    UpdateService.instance.checkAndUpdate();
+    unawaited(UpdateService.instance.checkAndUpdate());
   }
 
   @override
