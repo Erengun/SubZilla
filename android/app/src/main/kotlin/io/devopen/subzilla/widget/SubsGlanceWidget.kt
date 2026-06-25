@@ -13,6 +13,7 @@ import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.layout.*
 import androidx.glance.text.*
 import androidx.glance.unit.ColorProvider
+import android.appwidget.AppWidgetManager
 import io.devopen.subzilla.MainActivity
 import java.time.LocalDate
 
@@ -165,6 +166,15 @@ private fun MonthlySpendContent(data: WidgetData?) {
 
 class MonthlySpendWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget = MonthlySpendWidget()
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+        WidgetRefreshWorker.schedule(context)
+    }
 }
 
 // ── Next Due Widget ───────────────────────────────────────────────────────────
@@ -240,6 +250,15 @@ private fun NextDueContent(data: WidgetData?, sorted: List<Triple<WidgetSub, Loc
 
 class NextDueWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget = NextDueWidget()
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+        WidgetRefreshWorker.schedule(context)
+    }
 }
 
 // ── Upcoming Widget ───────────────────────────────────────────────────────────
@@ -309,4 +328,13 @@ private fun UpcomingContent(data: WidgetData?, sorted: List<Pair<WidgetSub, Loca
 
 class UpcomingWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget = UpcomingWidget()
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+        WidgetRefreshWorker.schedule(context)
+    }
 }

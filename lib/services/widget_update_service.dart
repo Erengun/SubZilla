@@ -39,9 +39,18 @@ class WidgetUpdateService {
       final data = buildWidgetData(subs, currencySymbol);
       await HomeWidget.saveWidgetData('subs_data', jsonEncode(data));
       await Future.wait([
-        HomeWidget.updateWidget(iOSName: 'MonthlySpendWidget', androidName: 'SubsWidget'),
-        HomeWidget.updateWidget(iOSName: 'NextDueWidget', androidName: 'SubsWidget'),
-        HomeWidget.updateWidget(iOSName: 'UpcomingWidget', androidName: 'SubsWidget'),
+        HomeWidget.updateWidget(
+          iOSName: 'MonthlySpendWidget',
+          qualifiedAndroidName: 'io.devopen.subzilla.widget.MonthlySpendWidgetReceiver',
+        ),
+        HomeWidget.updateWidget(
+          iOSName: 'NextDueWidget',
+          qualifiedAndroidName: 'io.devopen.subzilla.widget.NextDueWidgetReceiver',
+        ),
+        HomeWidget.updateWidget(
+          iOSName: 'UpcomingWidget',
+          qualifiedAndroidName: 'io.devopen.subzilla.widget.UpcomingWidgetReceiver',
+        ),
       ]);
     } catch (_) {
       // Widgets are non-critical — silently ignore errors.
